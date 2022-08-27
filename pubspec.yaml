@@ -30,8 +30,10 @@ environment:
 dependencies:
   adaptive_theme: ^3.1.1
   bloc: ^8.1.0
+  carousel_slider: ^4.1.1
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
