@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 double defaultMargin = 16;
 double defaultRadius = 8;
 
-Color primaryColor = Colors.red.shade800;
+Color primaryColor = Colors.red.shade900;
 Color secondaryColor = Colors.grey.shade200;
 Color mutedColor = Colors.grey;
 Color darkColor = const Color(0xFF090A0A);
@@ -116,6 +116,16 @@ TextStyle whiteTextStyle = GoogleFonts.plusJakartaSans(
 TextStyle darkGrayTextStyle = GoogleFonts.plusJakartaSans(
   color: darkGrayColor,
 );
+
+AppBar appBar({String? title, TextStyle? style}) {
+  return AppBar(
+    title: Text(
+      title ?? '',
+      style: style ?? headline,
+    ),
+    backgroundColor: primaryColor,
+  );
+}
 
 ButtonStyle primaryButtonStyle = ElevatedButton.styleFrom(
   padding: EdgeInsets.zero,
