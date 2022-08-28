@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
           fontWeight: bold,
         ),
       ),
+      backgroundColor: bgColorLight1,
       body: Center(
         child: SingleChildScrollView(
           child: Container(

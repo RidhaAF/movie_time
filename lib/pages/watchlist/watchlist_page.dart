@@ -10,6 +10,7 @@ class WatchlistPage extends StatelessWidget {
       appBar: appBar(
         title: 'Watchlist',
       ),
+      backgroundColor: bgColorLight1,
       body: Center(
         child: Text(
           'Watchlist Page',
