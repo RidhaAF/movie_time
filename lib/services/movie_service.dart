@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:movie_time/models/now_playing_movie_model.dart';
+import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/models/popular_movie_model.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -36,6 +37,21 @@ class MovieService {
         print(response.data);
       }
       final data = NowPlayingMovieModel.fromJson(response.data);
+      return data;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<OnTheAirSeriesModel?> getOnTheAirSeries() async {
+    String url =
+        '$baseUrl/tv/on_the_air?api_key=$apiKey&language=$language&page=1';
+    try {
+      var response = await Dio().get(url);
+      if (kDebugMode) {
+        print(response.data);
+      }
+      final data = OnTheAirSeriesModel.fromJson(response.data);
       return data;
     } catch (e) {
       throw Exception(e);
