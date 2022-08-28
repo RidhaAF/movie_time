@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                             state.popularMovie.results[index]?.backdropPath !=
                                     null
                                 ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.backdropPath}',
+                                    '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
                                   )
                                 : const AssetImage('assets/images/img_null.png')
                                     as ImageProvider,
