@@ -7,14 +7,14 @@ part 'now_playing_movie_state.dart';
 
 class NowPlayingMovieCubit extends Cubit<NowPlayingMovieState> {
   NowPlayingMovieCubit() : super(NowPlayingMovieInitial()) {
-    getNowPlaying();
+    getNowPlayingMovies();
   }
 
-  void getNowPlaying() async {
+  void getNowPlayingMovies() async {
     try {
       emit(NowPlayingMovieLoading());
       NowPlayingMovieModel? nowPlayingMovie =
-          await MovieService().getNowPlaying();
+          await MovieService().getNowPlayingMovies();
       emit(NowPlayingMovieLoaded(nowPlayingMovie!));
     } catch (e) {
       emit(NowPlayingMovieError());
