@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:movie_time/models/movie_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:movie_time/models/now_playing_movie_model.dart';
+import 'package:movie_time/models/popular_movie_model.dart';
 import 'package:movie_time/utilities/env.dart';
 
 class MovieService {
@@ -9,32 +11,34 @@ class MovieService {
   String language = Env.language;
   String region = Env.region;
   var dio = Dio();
-  var headers = {'Content-Type': 'application/json'};
 
-  Future<MovieModel?> getPopular() async {
+  Future<PopularMovieModel?> getPopular() async {
     var url = '$baseUrl/movie/popular?api_key=$apiKey&language=$language';
 
     try {
-      var response = await dio.get(url, options: Options(headers: headers));
-      print(response.data);
-      final data = MovieModel.fromJson(response.data);
+      var response = await dio.get(url);
+      if (kDebugMode) {
+        print(response.data);
+      }
+      final data = PopularMovieModel.fromJson(response.data);
       return data;
     } catch (e) {
-      print(e);
-      throw Exception('Failed to load get popular');
+      throw Exception(e);
     }
   }
 
-  Future<MovieModel?> getLatest() async {
-    String url = '$baseUrl/movie/latest?api_key=$apiKey&language=$language';
+  Future<NowPlayingMovieModel?> getNowPlaying() async {
+    String url =
+        '$baseUrl/movie/now_playing?api_key=$apiKey&language=$language&page=1&region=$region';
     try {
       var response = await Dio().get(url);
-      print(response.data);
-      final data = MovieModel.fromJson(response.data);
+      if (kDebugMode) {
+        print(response.data);
+      }
+      final data = NowPlayingMovieModel.fromJson(response.data);
       return data;
     } catch (e) {
-      print(e);
-      throw Exception('Failed to load get latest');
+      throw Exception(e);
     }
   }
 }

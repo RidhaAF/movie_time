@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_time/cubit/movie/movie_cubit.dart';
-import 'package:movie_time/models/movie_model.dart';
+import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
+import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -37,12 +37,11 @@ class _HomePageState extends State<HomePage> {
         child: SingleChildScrollView(
           child: Container(
             margin: EdgeInsets.symmetric(vertical: defaultMargin),
-            child: BlocBuilder<MovieCubit, MovieState>(
+            child: BlocBuilder<PopularMovieCubit, PopularMovieState>(
               builder: (context, state) {
-                if (state is MovieInitial) {
-                  return Container();
-                } else if (state is MovieLoading) {
+                if (state is PopularMovieLoading) {
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(
                         color: primaryColor,
@@ -57,19 +56,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   );
-                } else if (state is MovieLoaded) {
-                  return Column(
-                    children: [
-                      sliderImage(state.movie),
-                      latestMovie(state.movie),
-                      latestSeries(state.movie),
-                      popular(state.movie),
-                      upcoming(state.movie),
-                    ],
-                  );
-                } else {
-                  return Container();
                 }
+                return Column(
+                  children: [
+                    sliderImage(),
+                    nowPlayingMovies(),
+                    popular(),
+                  ],
+                );
               },
             ),
           ),
@@ -78,280 +72,221 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget sliderImage(MovieModel movie) {
-    return Column(
-      children: [
-        CarouselSlider.builder(
-          itemCount: 5,
-          itemBuilder: (context, index, realIndex) {
-            return Container(
-              margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-              height: 200,
-              decoration: BoxDecoration(
-                color: secondaryColor,
-                image: DecorationImage(
-                  image: NetworkImage(
-                    '${Env.imageBaseURL}original/${movie.results[index].backdropPath}',
-                  ),
-                  fit: BoxFit.cover,
+  Widget sliderImage() {
+    return BlocBuilder<PopularMovieCubit, PopularMovieState>(
+      builder: (context, state) {
+        if (state is PopularMovieInitial) {
+          return Container();
+        } else if (state is PopularMovieLoading) {
+          return Container();
+        } else if (state is PopularMovieLoaded) {
+          return Column(
+            children: [
+              CarouselSlider.builder(
+                itemCount: 5,
+                itemBuilder: (context, index, realIndex) {
+                  return Container(
+                    margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: secondaryColor,
+                      image: DecorationImage(
+                        image:
+                            state.popularMovie.results[index]?.backdropPath !=
+                                    null
+                                ? NetworkImage(
+                                    '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.backdropPath}',
+                                  )
+                                : const AssetImage('assets/images/img_null.png')
+                                    as ImageProvider,
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(defaultRadius),
+                      ),
+                    ),
+                  );
+                },
+                options: CarouselOptions(
+                  height: 200,
+                  autoPlay: true,
+                  viewportFraction: 0.95,
+                  autoPlayInterval: const Duration(seconds: 5),
+                  onPageChanged: (index, carouselReason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(defaultRadius),
-                ),
+                carouselController: _carouselController,
               ),
-            );
-          },
-          options: CarouselOptions(
-            height: 200,
-            autoPlay: true,
-            viewportFraction: 0.9,
-            autoPlayInterval: const Duration(seconds: 5),
-            onPageChanged: (index, carouselReason) {
-              setState(() {
-                _current = index;
-              });
-            },
-          ),
-          carouselController: _carouselController,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(5, (index) {
-            return GestureDetector(
-              onTap: () => _carouselController.animateToPage(index),
-              child: Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _current == index ? primaryColor : mutedColor,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return GestureDetector(
+                    onTap: () => _carouselController.animateToPage(index),
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _current == index ? primaryColor : mutedColor,
+                      ),
+                    ),
+                  );
+                }),
               ),
-            );
-          }),
-        ),
-      ],
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 
-  Widget latestMovie(MovieModel movie) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-              defaultMargin, defaultMargin, defaultMargin, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget nowPlayingMovies() {
+    return BlocBuilder<NowPlayingMovieCubit, NowPlayingMovieState>(
+      builder: (context, state) {
+        if (state is NowPlayingMovieInitial) {
+          return Container();
+        } else if (state is NowPlayingMovieLoading) {
+          return Container();
+        } else if (state is NowPlayingMovieLoaded) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Latest Movie',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: title3FS,
-                  fontWeight: bold,
+              Container(
+                margin: EdgeInsets.fromLTRB(
+                    defaultMargin, defaultMargin, defaultMargin, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Now Playing Movies',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: title3FS,
+                        fontWeight: bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: primaryColor,
+                      size: 28,
+                    ),
+                  ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: primaryColor,
-                size: 28,
+              SizedBox(
+                height: 162,
+                width: double.infinity,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.only(left: defaultMargin),
+                      width: 114,
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        image: DecorationImage(
+                          image: state.nowPlayingMovie.results[index]
+                                      ?.posterPath !=
+                                  null
+                              ? NetworkImage(
+                                  '${Env.imageBaseURL}w500/${state.nowPlayingMovie.results[index]?.posterPath}',
+                                )
+                              : const AssetImage('assets/images/img_null.png')
+                                  as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(defaultRadius),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
-          ),
-        ),
-        SizedBox(
-          height: 162,
-          width: double.infinity,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(left: defaultMargin),
-                width: 114,
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      '${Env.imageBaseURL}original/${movie.results[index].posterPath}',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(defaultRadius),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 
-  Widget latestSeries(MovieModel movie) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-              defaultMargin, defaultMargin, defaultMargin, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget popular() {
+    return BlocBuilder<PopularMovieCubit, PopularMovieState>(
+      builder: (context, state) {
+        if (state is PopularMovieInitial) {
+          return Container();
+        } else if (state is PopularMovieLoading) {
+          return Container();
+        } else if (state is PopularMovieLoaded) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Latest Series',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: title3FS,
-                  fontWeight: bold,
+              Container(
+                margin: EdgeInsets.fromLTRB(
+                    defaultMargin, defaultMargin, defaultMargin, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Popular',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: title3FS,
+                        fontWeight: bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: primaryColor,
+                      size: 28,
+                    ),
+                  ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: primaryColor,
-                size: 28,
+              SizedBox(
+                height: 162,
+                width: double.infinity,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.only(left: defaultMargin),
+                      width: 114,
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        image: DecorationImage(
+                          image: state.popularMovie.results[index]
+                                      ?.posterPath !=
+                                  null
+                              ? NetworkImage(
+                                  '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.posterPath}',
+                                )
+                              : const AssetImage('assets/images/img_null.png')
+                                  as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(defaultRadius),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
-          ),
-        ),
-        SizedBox(
-          height: 162,
-          width: double.infinity,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(left: defaultMargin),
-                width: 114,
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      '${Env.imageBaseURL}original/${movie.results[index].posterPath}',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(defaultRadius),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget popular(MovieModel movie) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-              defaultMargin, defaultMargin, defaultMargin, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Popular',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: title3FS,
-                  fontWeight: bold,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: primaryColor,
-                size: 28,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 162,
-          width: double.infinity,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(left: defaultMargin),
-                width: 114,
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      '${Env.imageBaseURL}original/${movie.results[index].posterPath}',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(defaultRadius),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget upcoming(MovieModel movie) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-              defaultMargin, defaultMargin, defaultMargin, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Upcoming',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: title3FS,
-                  fontWeight: bold,
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: primaryColor,
-                size: 28,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 162,
-          width: double.infinity,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(left: defaultMargin),
-                width: 114,
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      '${Env.imageBaseURL}original/${movie.results[index].posterPath}',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(defaultRadius),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+          );
+        } else {
+          return Container();
+        }
+      },
     );
   }
 }
