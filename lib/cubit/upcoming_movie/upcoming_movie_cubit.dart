@@ -7,13 +7,13 @@ part 'upcoming_movie_state.dart';
 
 class UpcomingMovieCubit extends Cubit<UpcomingMovieState> {
   UpcomingMovieCubit() : super(UpcomingMovieInitial()) {
-    getUpcomingMovie();
+    getUpcomingMovies();
   }
 
-  void getUpcomingMovie() async {
+  void getUpcomingMovies() async {
     try {
       emit(UpcomingMovieLoading());
-      final data = await MovieService().getUpcomingMovie();
+      final data = await MovieService().getUpcomingMovies();
       emit(UpcomingMovieLoaded(data!));
     } catch (e) {
       emit(UpcomingMovieError());

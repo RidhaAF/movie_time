@@ -14,7 +14,7 @@ class MovieService {
   String region = Env.region;
   var dio = Dio();
 
-  Future<PopularMovieModel?> getPopular() async {
+  Future<PopularMovieModel?> getPopularMovies() async {
     var url = '$baseUrl/movie/popular?api_key=$apiKey&language=$language';
 
     try {
@@ -29,7 +29,7 @@ class MovieService {
     }
   }
 
-  Future<NowPlayingMovieModel?> getNowPlaying() async {
+  Future<NowPlayingMovieModel?> getNowPlayingMovies() async {
     String url =
         '$baseUrl/movie/now_playing?api_key=$apiKey&language=$language&page=1&region=$region';
     try {
@@ -59,7 +59,7 @@ class MovieService {
     }
   }
 
-  Future<UpcomingMovieModel?> getUpcomingMovie() async {
+  Future<UpcomingMovieModel?> getUpcomingMovies() async {
     String url =
         '$baseUrl/movie/upcoming?api_key=$apiKey&language=$language&page=1&region=$region';
     try {

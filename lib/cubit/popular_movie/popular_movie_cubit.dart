@@ -7,13 +7,13 @@ part 'popular_movie_state.dart';
 
 class PopularMovieCubit extends Cubit<PopularMovieState> {
   PopularMovieCubit() : super(PopularMovieInitial()) {
-    getPopular();
+    getPopularMovies();
   }
 
-  void getPopular() async {
+  void getPopularMovies() async {
     try {
       emit(PopularMovieLoading());
-      PopularMovieModel? popularMovie = await MovieService().getPopular();
+      PopularMovieModel? popularMovie = await MovieService().getPopularMovies();
       emit(PopularMovieLoaded(popularMovie!));
     } catch (e) {
       emit(PopularMovieError());
