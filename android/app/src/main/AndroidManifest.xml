@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.movie_time">
+    package="com.ridhaaf.movie_time">
    <application
         android:label="movie_time"
         android:name="${applicationName}"
