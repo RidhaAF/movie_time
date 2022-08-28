@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movie_time/cubit/movie/movie_cubit.dart';
+import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
+import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/pages/main_page.dart';
 
 void main() {
@@ -15,7 +16,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MovieCubit(),
+          create: (context) => PopularMovieCubit(),
+        ),
+        BlocProvider(
+          create: (context) => NowPlayingMovieCubit(),
         ),
       ],
       child: const MaterialApp(
