@@ -25,6 +25,17 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      context.read<PopularMovieCubit>().getPopularMovies();
+      context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
+      context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
+      context.read<UpcomingMovieCubit>().getUpcomingMovies();
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,39 +48,43 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: bgColorLight1,
       body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: defaultMargin),
-            child: BlocBuilder<PopularMovieCubit, PopularMovieState>(
-              builder: (context, state) {
-                if (state is PopularMovieLoading) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        color: primaryColor,
-                      ),
-                      SizedBox(height: defaultMargin),
-                      Text(
-                        'Loading',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: title3FS,
-                          fontWeight: semiBold,
+        child: RefreshIndicator(
+          color: primaryColor,
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: defaultMargin),
+              child: BlocBuilder<PopularMovieCubit, PopularMovieState>(
+                builder: (context, state) {
+                  if (state is PopularMovieLoading) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: primaryColor,
                         ),
-                      ),
+                        SizedBox(height: defaultMargin),
+                        Text(
+                          'Loading',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: title3FS,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return Column(
+                    children: [
+                      sliderImage(),
+                      nowPlayingMovies(),
+                      onTheAirSeries(),
+                      popular(),
+                      upcoming(),
                     ],
                   );
-                }
-                return Column(
-                  children: [
-                    sliderImage(),
-                    nowPlayingMovies(),
-                    onTheAirSeries(),
-                    popular(),
-                    upcoming(),
-                  ],
-                );
-              },
+                },
+              ),
             ),
           ),
         ),
