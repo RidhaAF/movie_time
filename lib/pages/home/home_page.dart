@@ -181,15 +181,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 162,
+                height: 150,
                 width: double.infinity,
                 child: ListView.builder(
+                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: EdgeInsets.only(left: defaultMargin),
-                      width: 114,
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 100,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
@@ -253,15 +254,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 162,
+                height: 150,
                 width: double.infinity,
                 child: ListView.builder(
+                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: EdgeInsets.only(left: defaultMargin),
-                      width: 114,
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 100,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
@@ -325,15 +327,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 162,
+                height: 150,
                 width: double.infinity,
                 child: ListView.builder(
+                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: EdgeInsets.only(left: defaultMargin),
-                      width: 114,
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 100,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
