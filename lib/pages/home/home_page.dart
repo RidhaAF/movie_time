@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
+import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -64,6 +65,7 @@ class _HomePageState extends State<HomePage> {
                     nowPlayingMovies(),
                     onTheAirSeries(),
                     popular(),
+                    upcoming(),
                   ],
                 );
               },
@@ -181,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 150,
+                height: 154,
                 width: double.infinity,
                 child: ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
@@ -190,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
-                      width: 100,
+                      width: 102,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
@@ -254,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 150,
+                height: 154,
                 width: double.infinity,
                 child: ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
@@ -263,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
-                      width: 100,
+                      width: 102,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
@@ -327,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(
-                height: 150,
+                height: 154,
                 width: double.infinity,
                 child: ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
@@ -336,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
-                      width: 100,
+                      width: 102,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
@@ -345,6 +347,79 @@ class _HomePageState extends State<HomePage> {
                                   null
                               ? NetworkImage(
                                   '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.posterPath}',
+                                )
+                              : const AssetImage('assets/images/img_null.png')
+                                  as ImageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(defaultRadius),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
+  Widget upcoming() {
+    return BlocBuilder<UpcomingMovieCubit, UpcomingMovieState>(
+      builder: (context, state) {
+        if (state is UpcomingMovieInitial) {
+          return Container();
+        } else if (state is UpcomingMovieLoading) {
+          return Container();
+        } else if (state is UpcomingMovieLoaded) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(
+                    defaultMargin, defaultMargin, defaultMargin, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Upcoming',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: title3FS,
+                        fontWeight: bold,
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: primaryColor,
+                      size: 28,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 154,
+                width: double.infinity,
+                child: ListView.builder(
+                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.upcomingMovie.results.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 102,
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        image: DecorationImage(
+                          image: state.upcomingMovie.results[index]
+                                      ?.posterPath !=
+                                  null
+                              ? NetworkImage(
+                                  '${Env.imageBaseURL}w500/${state.upcomingMovie.results[index]?.posterPath}',
                                 )
                               : const AssetImage('assets/images/img_null.png')
                                   as ImageProvider,
