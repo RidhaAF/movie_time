@@ -6,6 +6,7 @@ import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart'
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
+import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/pages/main_page.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
@@ -44,6 +45,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => RecommendationMovieCubit(),
+        ),
+        BlocProvider(
+          create: (context) => SeriesDetailCubit(),
         ),
       ],
       child: MaterialApp(

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
-import 'package:movie_time/services/movie_service.dart';
+import 'package:movie_time/services/series_service.dart';
 
 part 'on_the_air_series_state.dart';
 
@@ -13,7 +13,7 @@ class OnTheAirSeriesCubit extends Cubit<OnTheAirSeriesState> {
   void getOnTheAirSeries() async {
     try {
       emit(OnTheAirSeriesLoading());
-      final data = await MovieService().getOnTheAirSeries();
+      final data = await SeriesService().getOnTheAirSeries();
       emit(OnTheAirSeriesLoaded(data!));
     } catch (e) {
       emit(OnTheAirSeriesError());
