@@ -8,6 +8,10 @@ import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/pages/main_page.dart';
+import 'package:movie_time/pages/movie/movie_detail_page.dart';
+import 'package:movie_time/pages/movie/now_playing_movies_page.dart';
+import 'package:movie_time/pages/movie/popular_movies_page.dart';
+import 'package:movie_time/pages/movie/upcoming_movies_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,6 +51,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/': (context) => const MainPage(),
+          '/movie/detail': (context) => const MovieDetailPage(),
+          '/movie/now-playing': (context) => const NowPlayingMoviesPages(),
+          '/movie/popular': (context) => const PopularMoviesPage(),
+          '/movie/upcoming': (context) => const UpcomingMoviesPage(),
         },
       ),
     );

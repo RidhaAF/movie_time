@@ -7,8 +7,9 @@ double defaultRadius = 8;
 Color primaryColor = Colors.red.shade900;
 Color secondaryColor = Colors.grey.shade200;
 Color mutedColor = Colors.grey;
+Color greyColor = Colors.grey.shade800;
 Color darkColor = const Color(0xFF090A0A);
-Color darkGrayColor = const Color(0xFF1D1D1D);
+Color darkGreyColor = const Color(0xFF1D1D1D);
 Color blackColor = Colors.black;
 Color whiteColor = Colors.white;
 Color yellowColor = Colors.yellow.shade700;
@@ -113,8 +114,8 @@ TextStyle whiteTextStyle = GoogleFonts.plusJakartaSans(
   color: whiteColor,
 );
 
-TextStyle darkGrayTextStyle = GoogleFonts.plusJakartaSans(
-  color: darkGrayColor,
+TextStyle darkGreyTextStyle = GoogleFonts.plusJakartaSans(
+  color: darkGreyColor,
 );
 
 AppBar appBar({String? title, TextStyle? style}) {
@@ -127,17 +128,38 @@ AppBar appBar({String? title, TextStyle? style}) {
   );
 }
 
+Widget loadingIndicator() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          color: primaryColor,
+        ),
+        SizedBox(height: defaultMargin),
+        Text(
+          'Loading',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: title3FS,
+            fontWeight: semiBold,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 ButtonStyle primaryButtonStyle = ElevatedButton.styleFrom(
   padding: EdgeInsets.zero,
-  primary: primaryColor,
+  backgroundColor: primaryColor,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(defaultRadius),
   ),
 );
 
-ButtonStyle darkGrayButtonStyle = ElevatedButton.styleFrom(
+ButtonStyle darkGreyButtonStyle = ElevatedButton.styleFrom(
   padding: EdgeInsets.zero,
-  primary: darkGrayColor,
+  backgroundColor: darkGreyColor,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(defaultRadius),
   ),

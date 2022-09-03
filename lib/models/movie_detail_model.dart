@@ -24,6 +24,7 @@ class MovieDetailModel {
   bool? video;
   double? voteAverage;
   int? voteCount;
+  Releases? releases;
 
   MovieDetailModel({
     this.adult,
@@ -51,14 +52,16 @@ class MovieDetailModel {
     this.video,
     this.voteAverage,
     this.voteCount,
+    this.releases,
   });
 
   factory MovieDetailModel.fromJson(Map<String, dynamic> json) =>
       MovieDetailModel(
         adult: json["adult"],
         backdropPath: json["backdrop_path"],
-        belongsToCollection:
-            BelongsToCollection.fromJson(json["belongs_to_collection"]),
+        belongsToCollection: json["belongs_to_collection"] == null
+            ? null
+            : BelongsToCollection.fromJson(json["belongs_to_collection"]),
         budget: json["budget"],
         genres: List<Genre>.from(json["genres"].map((x) => Genre.fromJson(x))),
         homepage: json["homepage"],
@@ -86,6 +89,7 @@ class MovieDetailModel {
         video: json["video"],
         voteAverage: json["vote_average"].toDouble(),
         voteCount: json["vote_count"],
+        releases: Releases.fromJson(json["releases"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -118,6 +122,7 @@ class MovieDetailModel {
         "video": video,
         "vote_average": voteAverage,
         "vote_count": voteCount,
+        "releases": releases?.toJson(),
       };
 }
 
@@ -217,6 +222,52 @@ class ProductionCountry {
   Map<String, dynamic> toJson() => {
         "iso_3166_1": iso31661,
         "name": name,
+      };
+}
+
+class Releases {
+  List<Country>? countries;
+
+  Releases({
+    this.countries,
+  });
+
+  factory Releases.fromJson(Map<String, dynamic> json) => Releases(
+        countries: List<Country>.from(
+            json["countries"].map((x) => Country.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "countries": List<dynamic>.from(countries!.map((x) => x.toJson())),
+      };
+}
+
+class Country {
+  String? certification;
+  String? iso31661;
+  bool? primary;
+  DateTime? releaseDate;
+
+  Country({
+    this.certification,
+    this.iso31661,
+    this.primary,
+    this.releaseDate,
+  });
+
+  factory Country.fromJson(Map<String, dynamic> json) => Country(
+        certification: json["certification"],
+        iso31661: json["iso_3166_1"],
+        primary: json["primary"],
+        releaseDate: DateTime.parse(json["release_date"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "certification": certification,
+        "iso_3166_1": iso31661,
+        "primary": primary,
+        "release_date":
+            "${releaseDate?.year.toString().padLeft(4, '0')}-${releaseDate?.month.toString().padLeft(2, '0')}-${releaseDate?.day.toString().padLeft(2, '0')}",
       };
 }
 

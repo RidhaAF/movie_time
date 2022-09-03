@@ -5,7 +5,7 @@ import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/models/now_playing_movie_model.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/models/popular_movie_model.dart';
-import 'package:movie_time/models/recommendation_movie.dart';
+import 'package:movie_time/models/recommendation_movie_model.dart';
 import 'package:movie_time/models/upcoming_movie_model.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -18,7 +18,7 @@ class MovieService {
   var dio = Dio();
 
   Future<PopularMovieModel?> getPopularMovies() async {
-    var url = '$baseUrl/movie/popular?api_key=$apiKey&language=$language';
+    String url = '$baseUrl/movie/popular?api_key=$apiKey&language=$language';
 
     try {
       var response = await dio.get(url);
@@ -35,6 +35,7 @@ class MovieService {
   Future<NowPlayingMovieModel?> getNowPlayingMovies() async {
     String url =
         '$baseUrl/movie/now_playing?api_key=$apiKey&language=$language&page=1&region=$region';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {
@@ -50,6 +51,7 @@ class MovieService {
   Future<OnTheAirSeriesModel?> getOnTheAirSeries() async {
     String url =
         '$baseUrl/tv/on_the_air?api_key=$apiKey&language=$language&page=1';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {
@@ -65,6 +67,7 @@ class MovieService {
   Future<UpcomingMovieModel?> getUpcomingMovies() async {
     String url =
         '$baseUrl/movie/upcoming?api_key=$apiKey&language=$language&page=1&region=$region';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {
@@ -78,7 +81,9 @@ class MovieService {
   }
 
   Future<MovieDetailModel?> getMovieDetail(int id) async {
-    String url = '$baseUrl/movie/$id?api_key=$apiKey&language=$language';
+    String url =
+        '$baseUrl/movie/$id?api_key=$apiKey&language=$language&append_to_response=releases';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {
@@ -94,6 +99,7 @@ class MovieService {
   Future<CreditModel?> getCredits(int id) async {
     String url =
         '$baseUrl/movie/$id/credits?api_key=$apiKey&language=$language';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {
@@ -109,6 +115,7 @@ class MovieService {
   Future<RecommendationMovieModel?> getRecommendationMovies(int id) async {
     String url =
         '$baseUrl/movie/$id/recommendations?api_key=$apiKey&language=$language&page=1';
+
     try {
       var response = await Dio().get(url);
       if (kDebugMode) {

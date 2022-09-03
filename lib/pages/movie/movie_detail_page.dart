@@ -55,24 +55,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             if (state is MovieDetailInitial) {
               return Container();
             } else if (state is MovieDetailLoading) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      color: primaryColor,
-                    ),
-                    SizedBox(height: defaultMargin),
-                    Text(
-                      'Loading',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: title3FS,
-                        fontWeight: semiBold,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              return loadingIndicator();
             } else if (state is MovieDetailLoaded) {
               return CustomScrollView(
                 slivers: [
@@ -156,18 +139,18 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           child: Row(
                             children: [
                               moviePoster(state.movieDetail),
-                              const SizedBox(width: 8),
+                              SizedBox(width: defaultMargin),
                               movieInfo(state.movieDetail),
                             ],
                           ),
                         ),
                         movieOverview(state.movieDetail),
-                        const SizedBox(height: 16),
+                        SizedBox(height: defaultMargin),
                         movieRating(state.movieDetail),
-                        const SizedBox(height: 16),
+                        SizedBox(height: defaultMargin),
                         movieCast(),
                         movieRecommendation(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: defaultMargin),
                       ],
                     ),
                   ),
@@ -190,7 +173,7 @@ Widget movieBackground(MovieDetailModel? movie) {
       color: secondaryColor,
       image: DecorationImage(
         colorFilter:
-            ColorFilter.mode(blackColor.withOpacity(0.5), BlendMode.darken),
+            ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
         image: movie?.backdropPath != null
             ? NetworkImage(
                 '${Env.imageBaseURL}original/${movie?.backdropPath}',
@@ -222,24 +205,40 @@ Widget moviePoster(MovieDetailModel? movie) {
 }
 
 Widget movieInfo(MovieDetailModel? movie) {
+  String? certification;
+  String? certificationWithDot;
+
+  for (var i = 0; i < movie!.releases!.countries!.length; i++) {
+    if (movie.releases?.countries?[i].iso31661 == 'US') {
+      certification = movie.releases?.countries?[i].certification ?? '';
+    }
+  }
+
+  if (certification != null) {
+    certificationWithDot = '$certification • ';
+  } else {
+    certificationWithDot = '';
+  }
+
   return Expanded(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          movie?.originalLanguage == 'id'
-              ? movie?.originalTitle ?? ''
-              : movie?.title ?? '',
+          movie.originalLanguage == 'id'
+              ? movie.originalTitle ?? ''
+              : movie.title ?? '',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: title3FS,
+            fontSize: title2FS,
             fontWeight: bold,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '${movie?.releaseDate?.toString().substring(0, 4)} • ${movie?.runtime ?? 0} min',
+          '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot ${movie.runtime ?? 0} mins',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: subheadlineFS,
+            fontSize: footnoteFS,
+            fontWeight: semiBold,
           ),
         ),
         const SizedBox(height: 8),
@@ -249,14 +248,14 @@ Widget movieInfo(MovieDetailModel? movie) {
             Text(
               'Genre ',
               style: GoogleFonts.plusJakartaSans(
-                fontSize: subheadlineFS,
+                fontSize: caption1FS,
               ),
             ),
             Expanded(
               child: Text(
-                movie?.genres?.map((genre) => genre.name).join(', ') ?? '',
+                movie.genres?.map((genre) => genre.name).join(', ') ?? '',
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: subheadlineFS,
+                  fontSize: footnoteFS,
                   fontWeight: semiBold,
                 ),
                 // overflow: TextOverflow.ellipsis,
@@ -273,16 +272,18 @@ Widget movieInfo(MovieDetailModel? movie) {
                   Text(
                     'Director ',
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: subheadlineFS,
+                      fontSize: caption1FS,
                     ),
                   ),
                   Text(
+                    // find all directors
                     state.credit.crew
-                            ?.firstWhere((crew) => crew.job == 'Director')
-                            .name ??
+                            ?.where((crew) => crew.job == 'Director')
+                            .map((crew) => crew.name)
+                            .join(', ') ??
                         '',
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: subheadlineFS,
+                      fontSize: footnoteFS,
                       fontWeight: semiBold,
                     ),
                   ),
@@ -314,7 +315,8 @@ Widget movieOverview(MovieDetailModel? movie) {
         ReadMoreText(
           movie?.overview ?? '',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: bodyFS,
+            color: greyColor,
+            fontSize: calloutFS,
           ),
           textAlign: TextAlign.justify,
           trimLines: 3,
@@ -365,55 +367,6 @@ Widget movieRating(MovieDetailModel? movie) {
         ),
       ],
     ),
-  );
-}
-
-Widget castList() {
-  return BlocBuilder<CreditCubit, CreditState>(
-    builder: (context, state) {
-      if (state is CreditLoaded) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                color: secondaryColor,
-                shape: BoxShape.circle,
-                image: const DecorationImage(
-                  image: NetworkImage(
-                      'https://www.themoviedb.org/t/p/w138_and_h175_face/phSALdB5EwWbDp2bsrYe5i6PlYP.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Text(
-              'Timothée Chalamet',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: bold,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Paul Atreides',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        );
-      }
-      return Container();
-    },
   );
 }
 
@@ -471,7 +424,7 @@ Widget movieCast() {
                         Text(
                           state.credit.cast?[index].name ?? '',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
+                            fontSize: caption1FS,
                             fontWeight: bold,
                           ),
                           textAlign: TextAlign.center,
@@ -482,7 +435,7 @@ Widget movieCast() {
                         Text(
                           state.credit.cast?[index].character ?? '',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
+                            fontSize: caption1FS,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
@@ -532,7 +485,7 @@ Widget movieRecommendation() {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: (() {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => MovieDetailPage(

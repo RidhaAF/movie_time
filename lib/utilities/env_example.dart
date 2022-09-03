@@ -1,6 +1,6 @@
 class Env {
-  static const baseURL = 'YOUR_BASE_URL';
-  static const imageBaseURL = 'YOUR_IMAGE_BASE_URL';
+  static const baseURL = 'https://api.themoviedb.org/3';
+  static const imageBaseURL = 'https://image.tmdb.org/t/p/';
 
   static const apiKey = 'YOUR_API_KEY';
   static const apiReadAccessToken = 'YOUR_API_READ_ACCESS_TOKEN';
