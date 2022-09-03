@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:movie_time/models/recommendation_movie.dart';
+import 'package:movie_time/models/recommendation_movie_model.dart';
 import 'package:movie_time/services/movie_service.dart';
 
 part 'recommendation_movie_state.dart';

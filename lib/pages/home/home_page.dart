@@ -21,11 +21,6 @@ class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
@@ -58,22 +53,7 @@ class _HomePageState extends State<HomePage> {
               child: BlocBuilder<PopularMovieCubit, PopularMovieState>(
                 builder: (context, state) {
                   if (state is PopularMovieLoading) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
-                        SizedBox(height: defaultMargin),
-                        Text(
-                          'Loading',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: title3FS,
-                            fontWeight: semiBold,
-                          ),
-                        ),
-                      ],
-                    );
+                    return loadingIndicator();
                   }
                   return Column(
                     children: [
@@ -193,22 +173,27 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: EdgeInsets.fromLTRB(
                     defaultMargin, defaultMargin, defaultMargin, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Now Playing Movies',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: title3FS,
-                        fontWeight: bold,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/movie/now-playing');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Now Playing Movies',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: title3FS,
+                          fontWeight: bold,
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: primaryColor,
-                      size: 28,
-                    ),
-                  ],
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: primaryColor,
+                        size: 28,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -351,22 +336,27 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: EdgeInsets.fromLTRB(
                     defaultMargin, defaultMargin, defaultMargin, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Popular',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: title3FS,
-                        fontWeight: bold,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/movie/popular');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Popular',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: title3FS,
+                          fontWeight: bold,
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: primaryColor,
-                      size: 28,
-                    ),
-                  ],
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: primaryColor,
+                        size: 28,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -436,22 +426,27 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: EdgeInsets.fromLTRB(
                     defaultMargin, defaultMargin, defaultMargin, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Upcoming',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: title3FS,
-                        fontWeight: bold,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/movie/upcoming');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Upcoming',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: title3FS,
+                          fontWeight: bold,
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: primaryColor,
-                      size: 28,
-                    ),
-                  ],
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: primaryColor,
+                        size: 28,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
