@@ -7,6 +7,8 @@ import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart'
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
+import 'package:movie_time/pages/series/on_the_air_series_page.dart';
+import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -263,22 +265,32 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: EdgeInsets.fromLTRB(
                     defaultMargin, defaultMargin, defaultMargin, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'On The Air Series',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: title3FS,
-                        fontWeight: bold,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OnTheAirSeriesPage(),
                       ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      color: primaryColor,
-                      size: 28,
-                    ),
-                  ],
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'On The Air Series',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: title3FS,
+                          fontWeight: bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: primaryColor,
+                        size: 28,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -289,24 +301,36 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      width: 102,
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        image: DecorationImage(
-                          image: state.onTheAirSeries.results[index]
-                                      ?.posterPath !=
-                                  null
-                              ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
-                                )
-                              : const AssetImage('assets/images/img_null.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(defaultRadius),
+                    return InkWell(
+                      onTap: (() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SeriesDetailPage(
+                              id: state.onTheAirSeries.results[index]?.id,
+                            ),
+                          ),
+                        );
+                      }),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        width: 102,
+                        decoration: BoxDecoration(
+                          color: secondaryColor,
+                          image: DecorationImage(
+                            image: state.onTheAirSeries.results[index]
+                                        ?.posterPath !=
+                                    null
+                                ? NetworkImage(
+                                    '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
+                                  )
+                                : const AssetImage('assets/images/img_null.png')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(defaultRadius),
+                          ),
                         ),
                       ),
                     );
