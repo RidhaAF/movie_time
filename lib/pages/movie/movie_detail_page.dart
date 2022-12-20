@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
+import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
@@ -29,6 +30,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     context
         .read<RecommendationMovieCubit>()
         .getRecommendationMovie(widget.id ?? 0);
+    if (context.read<WatchlistCubit>().getWatchlist() != null) {
+      List watchlist = context.read<WatchlistCubit>().getWatchlist() ?? [];
+      for (var item in watchlist) {
+        if (item == widget.id.toString()) {
+          setState(() {
+            isWatchlist = true;
+          });
+        }
+      }
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -92,6 +103,20 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         onTap: () {
                           setState(() {
                             isWatchlist = !isWatchlist;
+
+                            isWatchlist
+                                ? context
+                                    .read<WatchlistCubit>()
+                                    .addToWatchlist(widget.id.toString())
+                                : context
+                                    .read<WatchlistCubit>()
+                                    .removeFromWatchlist(widget.id.toString());
+                          });
+                        },
+                        onLongPress: () {
+                          setState(() {
+                            isWatchlist = !isWatchlist;
+                            context.read<WatchlistCubit>().clearWatchlist();
                           });
                         },
                         child: Container(
@@ -386,7 +411,7 @@ Widget movieCast() {
       ),
       Container(
         margin: const EdgeInsets.only(top: 8),
-        height: 148,
+        height: 152,
         child: BlocBuilder<CreditCubit, CreditState>(
           builder: (context, state) {
             if (state is CreditLoaded) {
@@ -421,25 +446,29 @@ Widget movieCast() {
                             ),
                           ),
                         ),
-                        Text(
-                          state.credit.cast?[index].name ?? '',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: caption1FS,
-                            fontWeight: bold,
+                        Expanded(
+                          child: Text(
+                            state.credit.cast?[index].name ?? '',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: caption1FS,
+                              fontWeight: bold,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          state.credit.cast?[index].character ?? '',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: caption1FS,
+                        Expanded(
+                          child: Text(
+                            state.credit.cast?[index].character ?? '',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: caption1FS,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
