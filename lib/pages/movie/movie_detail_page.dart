@@ -111,6 +111,23 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                 : context
                                     .read<WatchlistCubit>()
                                     .removeFromWatchlist(widget.id.toString());
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor:
+                                    isWatchlist ? Colors.green : primaryColor,
+                                content: Text(
+                                  isWatchlist
+                                      ? 'Added to Watchlist'
+                                      : 'Removed from Watchlist',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: whiteColor,
+                                    fontWeight: bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
                           });
                         },
                         onLongPress: () {
