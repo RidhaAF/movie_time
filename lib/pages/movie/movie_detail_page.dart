@@ -126,6 +126,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
+                                duration: const Duration(milliseconds: 500),
                               ),
                             );
                           });
