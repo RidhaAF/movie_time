@@ -30,10 +30,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     context
         .read<RecommendationMovieCubit>()
         .getRecommendationMovie(widget.id ?? 0);
-    if (context.read<WatchlistCubit>().getWatchlist() != null) {
-      List watchlist = context.read<WatchlistCubit>().getWatchlist() ?? [];
-      for (var item in watchlist) {
-        if (item == widget.id.toString()) {
+    if (context.read<WatchlistCubit>().getWatchlistData() != null) {
+      List watchlist = context.read<WatchlistCubit>().getWatchlistData() ?? [];
+      for (Map item in watchlist) {
+        if (item['id'] == widget.id) {
           setState(() {
             isWatchlist = true;
           });
@@ -105,12 +105,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             isWatchlist = !isWatchlist;
 
                             isWatchlist
-                                ? context
-                                    .read<WatchlistCubit>()
-                                    .addToWatchlist(widget.id.toString())
+                                ? context.read<WatchlistCubit>().addToWatchlist(
+                                    movie: state.movieDetail.toJson())
                                 : context
                                     .read<WatchlistCubit>()
-                                    .removeFromWatchlist(widget.id.toString());
+                                    .removeFromWatchlist(
+                                        movie: state.movieDetail.toJson());
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -126,6 +126,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
+                                duration: const Duration(milliseconds: 500),
                               ),
                             );
                           });
@@ -162,7 +163,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           duration: const Duration(milliseconds: 300),
                           opacity: top <= 130.0 ? 1.0 : 0.0,
                           child: Text(
-                            state.movieDetail.title ?? '',
+                            state.movieDetail.title!.length > 20
+                                ? '${state.movieDetail.title!.substring(0, 20)}...'
+                                : state.movieDetail.title ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: bold,
                             ),
