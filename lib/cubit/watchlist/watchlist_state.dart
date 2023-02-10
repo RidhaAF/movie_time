@@ -20,11 +20,4 @@ class WatchlistLoaded extends WatchlistState {
   List<Object> get props => [watchlist];
 }
 
-class WatchlistError extends WatchlistState {
-  final String message;
-
-  const WatchlistError(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
+class WatchlistError extends WatchlistState {}
