@@ -7,29 +7,42 @@ part 'watchlist_state.dart';
 class WatchlistCubit extends Cubit<WatchlistState> {
   GetStorage box = GetStorage();
   List watchlist = [];
-  WatchlistCubit() : super(WatchlistInitial());
+  WatchlistCubit() : super(WatchlistInitial()) {
+    getWatchlist();
+  }
 
-  void addToWatchlist(String id) {
-    watchlist.add(id);
-    print('add $watchlist');
+  void getWatchlist() {
+    try {
+      emit(WatchlistLoading());
+      watchlist = box.read('watchlist') ?? [];
+      if (watchlist.isNotEmpty) {
+        emit(WatchlistLoaded(watchlist));
+      } else {
+        emit(WatchlistError());
+      }
+    } on Exception {
+      emit(WatchlistError());
+    }
+  }
+
+  void addToWatchlist({required Map<String, dynamic> movie}) {
+    watchlist.add(movie);
     box.write('watchlist', watchlist);
     emit(WatchlistLoaded(watchlist));
   }
 
-  void removeFromWatchlist(String id) {
-    watchlist.remove(id);
-    print('remove $watchlist');
+  void removeFromWatchlist({required Map<String, dynamic> movie}) {
+    watchlist.removeWhere((e) => e['id'] == movie['id']);
     box.write('watchlist', watchlist);
     emit(WatchlistLoaded(watchlist));
   }
 
-  getWatchlist() {
-    return watchlist = box.read('watchlist') ?? [];
+  getWatchlistData() {
+    return watchlist;
   }
 
   void clearWatchlist() {
     watchlist.clear();
-    print('watchlist cleared');
     box.write('watchlist', null);
     emit(WatchlistLoaded(watchlist));
   }

@@ -6,14 +6,19 @@ import 'package:movie_time/services/movie_service.dart';
 part 'recommendation_movie_state.dart';
 
 class RecommendationMovieCubit extends Cubit<RecommendationMovieState> {
+  RecommendationMovieModel? recommendationMovie;
   RecommendationMovieCubit() : super(RecommendationMovieInitial());
 
   void getRecommendationMovie(int id) async {
     try {
       emit(RecommendationMovieLoading());
-      final data = await MovieService().getRecommendationMovies(id);
-      emit(RecommendationMovieLoaded(data!));
-    } catch (e) {
+      recommendationMovie = await MovieService().getRecommendationMovies(id);
+      if (recommendationMovie?.results.isNotEmpty ?? false) {
+        emit(RecommendationMovieLoaded(recommendationMovie!));
+      } else {
+        emit(RecommendationMovieError());
+      }
+    } on Exception {
       emit(RecommendationMovieError());
     }
   }
