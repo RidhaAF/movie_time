@@ -31,7 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.all(defaultMargin),
         child: Container(
           decoration: BoxDecoration(
-            color: box.read('isDarkMode') ? bgColorDark3 : bgColorLight2,
+            color:
+                box.read('isDarkMode') ?? false ? bgColorDark3 : bgColorLight2,
             borderRadius: BorderRadius.circular(defaultRadius),
           ),
           child: ListTile(
