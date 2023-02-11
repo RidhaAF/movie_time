@@ -44,7 +44,6 @@ class _HomePageState extends State<HomePage> {
           fontWeight: bold,
         ),
       ),
-      backgroundColor: bgColorLight1,
       body: Center(
         child: RefreshIndicator(
           color: primaryColor,
@@ -206,35 +205,39 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailPage(
-                              id: state.nowPlayingMovie.results[index]?.id,
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: InkWell(
+                        customBorder: cardBorderRadius,
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                id: state.nowPlayingMovie.results[index]?.id,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 102,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.nowPlayingMovie.results[index]
-                                        ?.posterPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.nowPlayingMovie.results[index]?.posterPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
+                          );
+                        }),
+                        child: Container(
+                          width: 102,
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            image: DecorationImage(
+                              image: state.nowPlayingMovie.results[index]
+                                          ?.posterPath !=
+                                      null
+                                  ? NetworkImage(
+                                      '${Env.imageBaseURL}w500/${state.nowPlayingMovie.results[index]?.posterPath}',
+                                    )
+                                  : const AssetImage(
+                                          'assets/images/img_null.png')
+                                      as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
                           ),
                         ),
                       ),
@@ -301,35 +304,39 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SeriesDetailPage(
-                              id: state.onTheAirSeries.results[index]?.id,
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: InkWell(
+                        customBorder: cardBorderRadius,
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SeriesDetailPage(
+                                id: state.onTheAirSeries.results[index]?.id,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 102,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.onTheAirSeries.results[index]
-                                        ?.posterPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
+                          );
+                        }),
+                        child: Container(
+                          width: 102,
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            image: DecorationImage(
+                              image: state.onTheAirSeries.results[index]
+                                          ?.posterPath !=
+                                      null
+                                  ? NetworkImage(
+                                      '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
+                                    )
+                                  : const AssetImage(
+                                          'assets/images/img_null.png')
+                                      as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
                           ),
                         ),
                       ),
@@ -391,35 +398,39 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailPage(
-                              id: state.popularMovie.results[index]?.id,
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: InkWell(
+                        customBorder: cardBorderRadius,
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                id: state.popularMovie.results[index]?.id,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 102,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.popularMovie.results[index]
-                                        ?.posterPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.posterPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
+                          );
+                        }),
+                        child: Container(
+                          width: 102,
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            image: DecorationImage(
+                              image: state.popularMovie.results[index]
+                                          ?.posterPath !=
+                                      null
+                                  ? NetworkImage(
+                                      '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.posterPath}',
+                                    )
+                                  : const AssetImage(
+                                          'assets/images/img_null.png')
+                                      as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
                           ),
                         ),
                       ),
@@ -481,35 +492,39 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: state.upcomingMovie.results.length,
                   itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailPage(
-                              id: state.upcomingMovie.results[index]?.id,
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: InkWell(
+                        customBorder: cardBorderRadius,
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                id: state.upcomingMovie.results[index]?.id,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 102,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.upcomingMovie.results[index]
-                                        ?.posterPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.upcomingMovie.results[index]?.posterPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
+                          );
+                        }),
+                        child: Container(
+                          width: 102,
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            image: DecorationImage(
+                              image: state.upcomingMovie.results[index]
+                                          ?.posterPath !=
+                                      null
+                                  ? NetworkImage(
+                                      '${Env.imageBaseURL}w500/${state.upcomingMovie.results[index]?.posterPath}',
+                                    )
+                                  : const AssetImage(
+                                          'assets/images/img_null.png')
+                                      as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
                           ),
                         ),
                       ),

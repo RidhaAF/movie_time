@@ -31,7 +31,6 @@ class _WatchlistPageState extends State<WatchlistPage> {
       appBar: appBar(
         title: 'Watchlist',
       ),
-      backgroundColor: bgColorLight1,
       body: RefreshIndicator(
         color: primaryColor,
         onRefresh: _onRefresh,
@@ -88,12 +87,22 @@ class _WatchlistPageState extends State<WatchlistPage> {
               );
             }
             return Center(
-              child: Text(
-                'Watchlist is empty',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/il_watchlist.png',
+                    height: 120,
+                  ),
+                  SizedBox(height: defaultMargin),
+                  Text(
+                    'You don\'t have a watchlist',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: headlineFS,
+                    ),
+                  ),
+                ],
               ),
             );
           },
