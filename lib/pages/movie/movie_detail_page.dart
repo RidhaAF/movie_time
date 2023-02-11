@@ -19,6 +19,8 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
+  late MovieDetailModel movie;
+  String title = '';
   bool isWatchlist = false;
   var top = 0.0;
 
@@ -67,6 +69,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             } else if (state is MovieDetailLoading) {
               return loadingIndicator();
             } else if (state is MovieDetailLoaded) {
+              movie = state.movieDetail;
+              title = movie.originalLanguage == 'id'
+                  ? movie.originalTitle ?? ''
+                  : movie.title ?? '';
               return CustomScrollView(
                 slivers: [
                   SliverAppBar(
@@ -104,12 +110,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             isWatchlist = !isWatchlist;
 
                             isWatchlist
-                                ? context.read<WatchlistCubit>().addToWatchlist(
-                                    movie: state.movieDetail.toJson())
+                                ? context
+                                    .read<WatchlistCubit>()
+                                    .addToWatchlist(movie: movie.toJson())
                                 : context
                                     .read<WatchlistCubit>()
-                                    .removeFromWatchlist(
-                                        movie: state.movieDetail.toJson());
+                                    .removeFromWatchlist(movie: movie.toJson());
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -162,16 +168,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           duration: const Duration(milliseconds: 300),
                           opacity: top <= 130.0 ? 1.0 : 0.0,
                           child: Text(
-                            state.movieDetail.title!.length > 20
-                                ? '${state.movieDetail.title!.substring(0, 20)}...'
-                                : state.movieDetail.title ?? '',
+                            title.length > 20
+                                ? '${title.substring(0, 20)}...'
+                                : title,
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: bold,
                             ),
                           ),
                         ),
                         collapseMode: CollapseMode.parallax,
-                        background: movieBackground(state.movieDetail),
+                        background: movieBackground(movie),
                       );
                     }),
                   ),
@@ -182,15 +188,15 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           margin: EdgeInsets.all(defaultMargin),
                           child: Row(
                             children: [
-                              moviePoster(state.movieDetail),
+                              moviePoster(movie),
                               SizedBox(width: defaultMargin),
-                              movieInfo(state.movieDetail),
+                              movieInfo(movie),
                             ],
                           ),
                         ),
-                        movieOverview(state.movieDetail),
+                        movieOverview(movie),
                         SizedBox(height: defaultMargin),
-                        movieRating(state.movieDetail),
+                        movieRating(movie),
                         SizedBox(height: defaultMargin),
                         movieCast(),
                         movieRecommendation(),
@@ -251,13 +257,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     String? certification;
     String? certificationWithDot;
 
-    for (var i = 0; i < movie!.releases!.countries!.length; i++) {
-      if (movie.releases?.countries?[i].iso31661 == 'US') {
-        certification = movie.releases?.countries?[i].certification ?? '';
+    for (Country country in movie!.releases!.countries ?? []) {
+      if (country.iso31661 == 'US') {
+        certification = country.certification ?? '';
       }
     }
 
-    if (certification != null) {
+    if (certification != null && certification != '') {
       certificationWithDot = '$certification • ';
     } else {
       certificationWithDot = '';
@@ -268,9 +274,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            movie.originalLanguage == 'id'
-                ? movie.originalTitle ?? ''
-                : movie.title ?? '',
+            title,
             style: GoogleFonts.plusJakartaSans(
               fontSize: title2FS,
               fontWeight: bold,
@@ -278,7 +282,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot ${movie.runtime ?? 0} mins',
+            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot${movie.runtime ?? 0} mins',
             style: GoogleFonts.plusJakartaSans(
               fontSize: footnoteFS,
               fontWeight: semiBold,
