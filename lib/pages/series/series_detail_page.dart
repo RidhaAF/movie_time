@@ -38,7 +38,6 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColorLight1,
       body: RefreshIndicator(
         color: primaryColor,
         onRefresh: _onRefresh,

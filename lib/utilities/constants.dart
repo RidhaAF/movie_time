@@ -63,6 +63,7 @@ TextStyle title3 = GoogleFonts.plusJakartaSans(
 
 // 17
 TextStyle headline = GoogleFonts.plusJakartaSans(
+  color: whiteColor,
   fontSize: headlineFS,
   fontWeight: semiBold,
 );
@@ -175,4 +176,10 @@ BoxShadow primaryBoxShadow = BoxShadow(
   spreadRadius: 0,
   blurRadius: 16,
   offset: const Offset(0, 0), // changes position of shadow
+);
+
+RoundedRectangleBorder cardBorderRadius = RoundedRectangleBorder(
+  borderRadius: BorderRadius.all(
+    Radius.circular(defaultRadius),
+  ),
 );

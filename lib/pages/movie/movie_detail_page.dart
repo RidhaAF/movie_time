@@ -57,7 +57,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColorLight1,
       body: RefreshIndicator(
         color: primaryColor,
         onRefresh: _onRefresh,
@@ -208,371 +207,370 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       ),
     );
   }
-}
 
-Widget movieBackground(MovieDetailModel? movie) {
-  return Container(
-    height: 200,
-    width: double.infinity,
-    decoration: BoxDecoration(
-      color: secondaryColor,
-      image: DecorationImage(
-        colorFilter:
-            ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
-        image: movie?.backdropPath != null
-            ? NetworkImage(
-                '${Env.imageBaseURL}original/${movie?.backdropPath}',
-              )
-            : const AssetImage('assets/images/img_null.png') as ImageProvider,
-        fit: BoxFit.cover,
+  Widget movieBackground(MovieDetailModel? movie) {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: secondaryColor,
+        image: DecorationImage(
+          colorFilter:
+              ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
+          image: movie?.backdropPath != null
+              ? NetworkImage(
+                  '${Env.imageBaseURL}original/${movie?.backdropPath}',
+                )
+              : const AssetImage('assets/images/img_null.png') as ImageProvider,
+          fit: BoxFit.cover,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget moviePoster(MovieDetailModel? movie) {
-  return Container(
-    height: 154,
-    width: 102,
-    decoration: BoxDecoration(
-      color: secondaryColor,
-      borderRadius: BorderRadius.circular(defaultRadius),
-      image: DecorationImage(
-        image: movie?.posterPath != null
-            ? NetworkImage(
-                '${Env.imageBaseURL}original/${movie?.posterPath}',
-              )
-            : const AssetImage('assets/images/img_null.png') as ImageProvider,
-        fit: BoxFit.cover,
+  Widget moviePoster(MovieDetailModel? movie) {
+    return Container(
+      height: 154,
+      width: 102,
+      decoration: BoxDecoration(
+        color: secondaryColor,
+        borderRadius: BorderRadius.circular(defaultRadius),
+        image: DecorationImage(
+          image: movie?.posterPath != null
+              ? NetworkImage(
+                  '${Env.imageBaseURL}original/${movie?.posterPath}',
+                )
+              : const AssetImage('assets/images/img_null.png') as ImageProvider,
+          fit: BoxFit.cover,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget movieInfo(MovieDetailModel? movie) {
-  String? certification;
-  String? certificationWithDot;
+  Widget movieInfo(MovieDetailModel? movie) {
+    String? certification;
+    String? certificationWithDot;
 
-  for (var i = 0; i < movie!.releases!.countries!.length; i++) {
-    if (movie.releases?.countries?[i].iso31661 == 'US') {
-      certification = movie.releases?.countries?[i].certification ?? '';
+    for (var i = 0; i < movie!.releases!.countries!.length; i++) {
+      if (movie.releases?.countries?[i].iso31661 == 'US') {
+        certification = movie.releases?.countries?[i].certification ?? '';
+      }
     }
-  }
 
-  if (certification != null) {
-    certificationWithDot = '$certification • ';
-  } else {
-    certificationWithDot = '';
-  }
+    if (certification != null) {
+      certificationWithDot = '$certification • ';
+    } else {
+      certificationWithDot = '';
+    }
 
-  return Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          movie.originalLanguage == 'id'
-              ? movie.originalTitle ?? ''
-              : movie.title ?? '',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: title2FS,
-            fontWeight: bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot ${movie.runtime ?? 0} mins',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: footnoteFS,
-            fontWeight: semiBold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Genre ',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: caption1FS,
-              ),
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            movie.originalLanguage == 'id'
+                ? movie.originalTitle ?? ''
+                : movie.title ?? '',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: title2FS,
+              fontWeight: bold,
             ),
-            Expanded(
-              child: Text(
-                movie.genres?.map((genre) => genre.name).join(', ') ?? '',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: footnoteFS,
-                  fontWeight: semiBold,
-                ),
-                // overflow: TextOverflow.ellipsis,
-              ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot ${movie.runtime ?? 0} mins',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: footnoteFS,
+              fontWeight: semiBold,
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        BlocBuilder<CreditCubit, CreditState>(
-          builder: (context, state) {
-            if (state is CreditLoaded) {
-              return Row(
-                children: [
-                  Text(
-                    'Director ',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: caption1FS,
-                    ),
-                  ),
-                  Text(
-                    // find all directors
-                    state.credit.crew
-                            ?.where((crew) => crew.job == 'Director')
-                            .map((crew) => crew.name)
-                            .join(', ') ??
-                        '',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: footnoteFS,
-                      fontWeight: semiBold,
-                    ),
-                  ),
-                ],
-              );
-            }
-            return Container();
-          },
-        ),
-      ],
-    ),
-  );
-}
-
-Widget movieOverview(MovieDetailModel? movie) {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Overview',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: title3FS,
-            fontWeight: bold,
           ),
-        ),
-        const SizedBox(height: 8),
-        ReadMoreText(
-          movie?.overview ?? '',
-          style: GoogleFonts.plusJakartaSans(
-            color: greyColor,
-            fontSize: calloutFS,
-          ),
-          textAlign: TextAlign.justify,
-          trimLines: 3,
-          trimMode: TrimMode.Line,
-          trimCollapsedText: '... read more',
-          trimExpandedText: ' show less',
-          delimiter: '',
-          lessStyle: GoogleFonts.plusJakartaSans(
-            color: primaryColor,
-            fontSize: bodyFS,
-            fontWeight: semiBold,
-          ),
-          moreStyle: GoogleFonts.plusJakartaSans(
-            color: primaryColor,
-            fontSize: bodyFS,
-            fontWeight: semiBold,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget movieRating(MovieDetailModel? movie) {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Icon(
-          Icons.star_rounded,
-          color: yellowColor,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          movie?.voteAverage?.toStringAsFixed(1) ?? '',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: headlineFS,
-            fontWeight: bold,
-          ),
-        ),
-        Text(
-          '/10 • ${movie?.voteCount.toString()}',
-          style: GoogleFonts.plusJakartaSans(
-            color: mutedColor,
-            fontSize: caption1FS,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget movieCast() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-        child: Text(
-          'Cast',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: title3FS,
-            fontWeight: bold,
-          ),
-        ),
-      ),
-      Container(
-        margin: const EdgeInsets.only(top: 8),
-        height: 152,
-        child: BlocBuilder<CreditCubit, CreditState>(
-          builder: (context, state) {
-            if (state is CreditLoaded) {
-              return ListView.builder(
-                padding: EdgeInsets.only(left: defaultMargin, right: 8),
-                scrollDirection: Axis.horizontal,
-                itemCount: state.credit.cast?.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    width: 80,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: secondaryColor,
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image:
-                                  state.credit.cast?[index].profilePath != null
-                                      ? NetworkImage(
-                                          '${Env.imageBaseURL}w500/${state.credit.cast?[index].profilePath}',
-                                        )
-                                      : const AssetImage(
-                                              'assets/images/img_null.png')
-                                          as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            state.credit.cast?[index].name ?? '',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: caption1FS,
-                              fontWeight: bold,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Expanded(
-                          child: Text(
-                            state.credit.cast?[index].character ?? '',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: caption1FS,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }
-            return Container();
-          },
-        ),
-      ),
-    ],
-  );
-}
-
-Widget movieRecommendation() {
-  return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
-    builder: (context, state) {
-      if (state is RecommendationMovieLoaded) {
-        return Container(
-          margin: EdgeInsets.only(bottom: defaultMargin),
-          child: Column(
+          const SizedBox(height: 8),
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding:
-                    EdgeInsets.fromLTRB(defaultMargin, 8, defaultMargin, 8),
-                child: Text(
-                  'Recommendation',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: title3FS,
-                    fontWeight: bold,
-                  ),
+              Text(
+                'Genre ',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: caption1FS,
                 ),
               ),
-              SizedBox(
-                height: 154,
-                width: double.infinity,
-                child: ListView.builder(
-                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: state.recommendationMovie.results.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (() {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailPage(
-                              id: state.recommendationMovie.results[index]?.id,
-                            ),
-                          ),
-                        );
-                      }),
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        width: 102,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.recommendationMovie.results[index]
-                                        ?.posterPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+              Expanded(
+                child: Text(
+                  movie.genres?.map((genre) => genre.name).join(', ') ?? '',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: footnoteFS,
+                    fontWeight: semiBold,
+                  ),
+                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-        );
-      }
-      return Container();
-    },
-  );
+          const SizedBox(height: 8),
+          BlocBuilder<CreditCubit, CreditState>(
+            builder: (context, state) {
+              if (state is CreditLoaded) {
+                return Row(
+                  children: [
+                    Text(
+                      'Director ',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: caption1FS,
+                      ),
+                    ),
+                    Text(
+                      // find all directors
+                      state.credit.crew
+                              ?.where((crew) => crew.job == 'Director')
+                              .map((crew) => crew.name)
+                              .join(', ') ??
+                          '',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: footnoteFS,
+                        fontWeight: semiBold,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Container();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget movieOverview(MovieDetailModel? movie) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Overview',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+              fontWeight: bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ReadMoreText(
+            movie?.overview ?? '',
+            style: Theme.of(context).textTheme.subtitle2,
+            textAlign: TextAlign.justify,
+            trimLines: 3,
+            trimMode: TrimMode.Line,
+            trimCollapsedText: '... read more',
+            trimExpandedText: ' show less',
+            delimiter: '',
+            lessStyle: GoogleFonts.plusJakartaSans(
+              color: primaryColor,
+              fontSize: bodyFS,
+              fontWeight: semiBold,
+            ),
+            moreStyle: GoogleFonts.plusJakartaSans(
+              color: primaryColor,
+              fontSize: bodyFS,
+              fontWeight: semiBold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget movieRating(MovieDetailModel? movie) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.star_rounded,
+            color: yellowColor,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            movie?.voteAverage?.toStringAsFixed(1) ?? '',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: headlineFS,
+              fontWeight: bold,
+            ),
+          ),
+          Text(
+            '/10 • ${movie?.voteCount.toString()}',
+            style: GoogleFonts.plusJakartaSans(
+              color: mutedColor,
+              fontSize: caption1FS,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget movieCast() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: defaultMargin),
+          child: Text(
+            'Cast',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+              fontWeight: bold,
+            ),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          height: 152,
+          child: BlocBuilder<CreditCubit, CreditState>(
+            builder: (context, state) {
+              if (state is CreditLoaded) {
+                return ListView.builder(
+                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.credit.cast?.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 80,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            height: 80,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: secondaryColor,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: state.credit.cast?[index].profilePath !=
+                                        null
+                                    ? NetworkImage(
+                                        '${Env.imageBaseURL}w500/${state.credit.cast?[index].profilePath}',
+                                      )
+                                    : const AssetImage(
+                                            'assets/images/img_null.png')
+                                        as ImageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              state.credit.cast?[index].name ?? '',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: caption1FS,
+                                fontWeight: bold,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Expanded(
+                            child: Text(
+                              state.credit.cast?[index].character ?? '',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: caption1FS,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget movieRecommendation() {
+    return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
+      builder: (context, state) {
+        if (state is RecommendationMovieLoaded) {
+          return Container(
+            margin: EdgeInsets.only(bottom: defaultMargin),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      EdgeInsets.fromLTRB(defaultMargin, 8, defaultMargin, 8),
+                  child: Text(
+                    'Recommendation',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: title3FS,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 154,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(left: defaultMargin, right: 8),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: state.recommendationMovie.results.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: (() {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailPage(
+                                id: state
+                                    .recommendationMovie.results[index]?.id,
+                              ),
+                            ),
+                          );
+                        }),
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          width: 102,
+                          decoration: BoxDecoration(
+                            color: secondaryColor,
+                            image: DecorationImage(
+                              image: state.recommendationMovie.results[index]
+                                          ?.posterPath !=
+                                      null
+                                  ? NetworkImage(
+                                      '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
+                                    )
+                                  : const AssetImage(
+                                          'assets/images/img_null.png')
+                                      as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return Container();
+      },
+    );
+  }
 }
