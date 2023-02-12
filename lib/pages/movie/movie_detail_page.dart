@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
@@ -168,8 +169,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           duration: const Duration(milliseconds: 300),
                           opacity: top <= 130.0 ? 1.0 : 0.0,
                           child: Text(
-                            title.length > 20
-                                ? '${title.substring(0, 20)}...'
+                            title.length > 25
+                                ? '${title.substring(0, 25)}...'
                                 : title,
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: bold,
@@ -506,7 +507,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   Widget movieRecommendation() {
     return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
       builder: (context, state) {
-        if (state is RecommendationMovieLoaded) {
+        if (state is RecommendationMovieLoading) {
+          return moviePosterShimmer(context);
+        } else if (state is RecommendationMovieLoaded) {
           return Container(
             margin: EdgeInsets.only(bottom: defaultMargin),
             child: Column(
@@ -531,37 +534,40 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: state.recommendationMovie.results.length,
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: (() {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailPage(
-                                id: state
-                                    .recommendationMovie.results[index]?.id,
+                      return Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        child: InkWell(
+                          customBorder: cardBorderRadius,
+                          onTap: (() {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MovieDetailPage(
+                                  id: state
+                                      .recommendationMovie.results[index]?.id,
+                                ),
                               ),
-                            ),
-                          );
-                        }),
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: secondaryColor,
-                            image: DecorationImage(
-                              image: state.recommendationMovie.results[index]
-                                          ?.posterPath !=
-                                      null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
+                            );
+                          }),
+                          child: Container(
+                            width: 102,
+                            decoration: BoxDecoration(
+                              color: secondaryColor,
+                              image: DecorationImage(
+                                image: state.recommendationMovie.results[index]
+                                            ?.posterPath !=
+                                        null
+                                    ? NetworkImage(
+                                        '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
+                                      )
+                                    : const AssetImage(
+                                            'assets/images/img_null.png')
+                                        as ImageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(defaultRadius),
+                              ),
                             ),
                           ),
                         ),
@@ -572,8 +578,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               ],
             ),
           );
+        } else {
+          return Container();
         }
-        return Container();
       },
     );
   }

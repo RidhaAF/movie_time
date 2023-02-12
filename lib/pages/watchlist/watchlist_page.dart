@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
@@ -39,7 +40,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
             if (state is WatchlistInitial) {
               return Container();
             } else if (state is WatchlistLoading) {
-              return loadingIndicator();
+              return gridMoviePosterShimmer(context);
             } else if (state is WatchlistLoaded) {
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -52,6 +53,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                 itemCount: state.watchlist.length,
                 itemBuilder: (context, index) {
                   return InkWell(
+                    customBorder: cardBorderRadius,
                     onTap: (() {
                       Navigator.push(
                         context,

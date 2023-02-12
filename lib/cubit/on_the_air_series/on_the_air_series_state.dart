@@ -13,6 +13,7 @@ class OnTheAirSeriesLoading extends OnTheAirSeriesState {}
 
 class OnTheAirSeriesLoaded extends OnTheAirSeriesState {
   final OnTheAirSeriesModel onTheAirSeries;
+
   const OnTheAirSeriesLoaded(this.onTheAirSeries);
 
   @override

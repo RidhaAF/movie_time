@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:movie_time/models/credit_model.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/models/now_playing_movie_model.dart';
@@ -21,9 +20,6 @@ class MovieService {
 
     try {
       var response = await dio.get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = PopularMovieModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -37,9 +33,6 @@ class MovieService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = NowPlayingMovieModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -53,9 +46,6 @@ class MovieService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = UpcomingMovieModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -69,9 +59,6 @@ class MovieService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = MovieDetailModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -85,9 +72,6 @@ class MovieService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = CreditModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -101,9 +85,6 @@ class MovieService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = RecommendationMovieModel.fromJson(response.data);
       return data;
     } catch (e) {

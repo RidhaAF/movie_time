@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
@@ -26,8 +27,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      context.read<PopularMovieCubit>().getPopularMovies();
       context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
+      context.read<PopularMovieCubit>().getPopularMovies();
       context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
       context.read<UpcomingMovieCubit>().getUpcomingMovies();
       setState(() {});
@@ -51,21 +52,14 @@ class _HomePageState extends State<HomePage> {
           child: SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.symmetric(vertical: defaultMargin),
-              child: BlocBuilder<PopularMovieCubit, PopularMovieState>(
-                builder: (context, state) {
-                  if (state is PopularMovieLoading) {
-                    return loadingIndicator();
-                  }
-                  return Column(
-                    children: [
-                      sliderImage(),
-                      nowPlayingMovies(),
-                      onTheAirSeries(),
-                      popular(),
-                      upcoming(),
-                    ],
-                  );
-                },
+              child: Column(
+                children: [
+                  sliderImage(),
+                  nowPlayingMovies(),
+                  onTheAirSeries(),
+                  popular(),
+                  upcoming(),
+                ],
               ),
             ),
           ),
@@ -80,42 +74,45 @@ class _HomePageState extends State<HomePage> {
         if (state is PopularMovieInitial) {
           return Container();
         } else if (state is PopularMovieLoading) {
-          return Container();
+          return sliderMoviePosterShimmer(context);
         } else if (state is PopularMovieLoaded) {
           return Column(
             children: [
               CarouselSlider.builder(
                 itemCount: 5,
                 itemBuilder: (context, index, realIndex) {
-                  return InkWell(
-                    onTap: (() {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MovieDetailPage(
-                            id: state.popularMovie.results[index]?.id,
+                  return Container(
+                    margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                    child: InkWell(
+                      customBorder: cardBorderRadius,
+                      onTap: (() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MovieDetailPage(
+                              id: state.popularMovie.results[index]?.id,
+                            ),
                           ),
-                        ),
-                      );
-                    }),
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        image: DecorationImage(
-                          image: state.popularMovie.results[index]
-                                      ?.backdropPath !=
-                                  null
-                              ? NetworkImage(
-                                  '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
-                                )
-                              : const AssetImage('assets/images/img_null.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(defaultRadius),
+                        );
+                      }),
+                      child: Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: secondaryColor,
+                          image: DecorationImage(
+                            image: state.popularMovie.results[index]
+                                        ?.backdropPath !=
+                                    null
+                                ? NetworkImage(
+                                    '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
+                                  )
+                                : const AssetImage('assets/images/img_null.png')
+                                    as ImageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(defaultRadius),
+                          ),
                         ),
                       ),
                     ),
@@ -166,7 +163,7 @@ class _HomePageState extends State<HomePage> {
         if (state is NowPlayingMovieInitial) {
           return Container();
         } else if (state is NowPlayingMovieLoading) {
-          return Container();
+          return moviePosterShimmer(context);
         } else if (state is NowPlayingMovieLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +257,7 @@ class _HomePageState extends State<HomePage> {
         if (state is OnTheAirSeriesInitial) {
           return Container();
         } else if (state is OnTheAirSeriesLoading) {
-          return Container();
+          return moviePosterShimmer(context);
         } else if (state is OnTheAirSeriesLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,7 +356,7 @@ class _HomePageState extends State<HomePage> {
         if (state is PopularMovieInitial) {
           return Container();
         } else if (state is PopularMovieLoading) {
-          return Container();
+          return moviePosterShimmer(context);
         } else if (state is PopularMovieLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,7 +450,7 @@ class _HomePageState extends State<HomePage> {
         if (state is UpcomingMovieInitial) {
           return Container();
         } else if (state is UpcomingMovieLoading) {
-          return Container();
+          return moviePosterShimmer(context);
         } else if (state is UpcomingMovieLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
