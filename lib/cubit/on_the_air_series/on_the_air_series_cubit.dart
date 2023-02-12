@@ -13,8 +13,8 @@ class OnTheAirSeriesCubit extends Cubit<OnTheAirSeriesState> {
   void getOnTheAirSeries() async {
     try {
       emit(OnTheAirSeriesLoading());
-      final data = await SeriesService().getOnTheAirSeries();
-      emit(OnTheAirSeriesLoaded(data!));
+      OnTheAirSeriesModel? series = await SeriesService().getOnTheAirSeries();
+      emit(OnTheAirSeriesLoaded(series!));
     } catch (e) {
       emit(OnTheAirSeriesError());
     }

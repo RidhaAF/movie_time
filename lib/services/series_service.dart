@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/utilities/env.dart';
@@ -18,9 +17,6 @@ class SeriesService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = OnTheAirSeriesModel.fromJson(response.data);
       return data;
     } catch (e) {
@@ -33,9 +29,6 @@ class SeriesService {
 
     try {
       var response = await Dio().get(url);
-      if (kDebugMode) {
-        print(response.data);
-      }
       final data = SeriesDetailModel.fromJson(response.data);
       return data;
     } catch (e) {
