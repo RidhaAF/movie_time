@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
@@ -35,7 +36,7 @@ class _NowPlayingMoviesPagesState extends State<NowPlayingMoviesPages> {
             if (state is NowPlayingMovieInitial) {
               return Container();
             } else if (state is NowPlayingMovieLoading) {
-              return loadingIndicator();
+              return gridMoviePosterShimmer(context);
             } else if (state is NowPlayingMovieLoaded) {
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -48,6 +49,7 @@ class _NowPlayingMoviesPagesState extends State<NowPlayingMoviesPages> {
                 itemCount: state.nowPlayingMovie.results.length,
                 itemBuilder: (context, index) {
                   return InkWell(
+                    customBorder: cardBorderRadius,
                     onTap: (() {
                       Navigator.push(
                         context,
@@ -59,7 +61,6 @@ class _NowPlayingMoviesPagesState extends State<NowPlayingMoviesPages> {
                       );
                     }),
                     child: Container(
-                      // margin: const EdgeInsets.only(right: 8),
                       width: 102,
                       decoration: BoxDecoration(
                         color: secondaryColor,

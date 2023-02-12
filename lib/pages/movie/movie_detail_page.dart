@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
@@ -506,7 +507,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   Widget movieRecommendation() {
     return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
       builder: (context, state) {
-        if (state is RecommendationMovieLoaded) {
+        if (state is RecommendationMovieLoading) {
+          return moviePosterShimmer(context);
+        } else if (state is RecommendationMovieLoaded) {
           return Container(
             margin: EdgeInsets.only(bottom: defaultMargin),
             child: Column(
@@ -575,8 +578,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               ],
             ),
           );
+        } else {
+          return Container();
         }
-        return Container();
       },
     );
   }
