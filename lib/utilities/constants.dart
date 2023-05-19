@@ -126,6 +126,7 @@ AppBar appBar({String? title, TextStyle? style}) {
       style: style ?? headline,
     ),
     backgroundColor: primaryColor,
+    centerTitle: true,
   );
 }
 
