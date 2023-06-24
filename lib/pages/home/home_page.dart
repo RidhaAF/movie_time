@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
+  bool dark = false;
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -38,6 +40,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Movie Time🍿',
@@ -221,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.nowPlayingMovie.results[index]
                                           ?.posterPath !=
@@ -320,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.onTheAirSeries.results[index]
                                           ?.posterPath !=
@@ -414,7 +417,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.popularMovie.results[index]
                                           ?.posterPath !=
@@ -508,7 +511,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.upcomingMovie.results[index]
                                           ?.posterPath !=

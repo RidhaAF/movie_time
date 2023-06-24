@@ -316,6 +316,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             builder: (context, state) {
               if (state is CreditLoaded) {
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Director ',
@@ -323,16 +324,17 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         fontSize: caption1FS,
                       ),
                     ),
-                    Text(
-                      // find all directors
-                      state.credit.crew
-                              ?.where((crew) => crew.job == 'Director')
-                              .map((crew) => crew.name)
-                              .join(', ') ??
-                          '',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: footnoteFS,
-                        fontWeight: semiBold,
+                    Expanded(
+                      child: Text(
+                        state.credit.crew
+                                ?.where((crew) => crew.job == 'Director')
+                                .map((crew) => crew.name)
+                                .join(', ') ??
+                            '',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: footnoteFS,
+                          fontWeight: semiBold,
+                        ),
                       ),
                     ),
                   ],
