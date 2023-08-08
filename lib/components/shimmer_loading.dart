@@ -15,11 +15,11 @@ Widget moviePosterShimmer(context) {
         margin: EdgeInsets.fromLTRB(
             defaultMargin, defaultMargin, defaultMargin, 12),
         child: Shimmer.fromColors(
-          baseColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+          baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
               ? bgColorDark3
               : Colors.grey.shade300,
           highlightColor:
-              AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+              AdaptiveTheme.of(context).brightness == Brightness.dark
                   ? greyColor
                   : Colors.grey.shade100,
           child: Container(
@@ -44,11 +44,11 @@ Widget moviePosterShimmer(context) {
               margin: const EdgeInsets.only(right: 8),
               child: Shimmer.fromColors(
                 baseColor:
-                    AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+                    AdaptiveTheme.of(context).brightness == Brightness.dark
                         ? bgColorDark3
                         : Colors.grey.shade300,
                 highlightColor:
-                    AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+                    AdaptiveTheme.of(context).brightness == Brightness.dark
                         ? greyColor
                         : Colors.grey.shade100,
                 child: Container(
@@ -79,10 +79,10 @@ Widget gridMoviePosterShimmer(context) {
     itemCount: 15,
     itemBuilder: (context, index) {
       return Shimmer.fromColors(
-        baseColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+        baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
             ? bgColorDark3
             : Colors.grey.shade300,
-        highlightColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+        highlightColor: AdaptiveTheme.of(context).brightness == Brightness.dark
             ? greyColor
             : Colors.grey.shade100,
         child: Container(
@@ -106,12 +106,11 @@ Widget sliderMoviePosterShimmer(context) {
           return Container(
             margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
             child: Shimmer.fromColors(
-              baseColor:
-                  AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
-                      ? bgColorDark3
-                      : Colors.grey.shade300,
+              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
+                  ? bgColorDark3
+                  : Colors.grey.shade300,
               highlightColor:
-                  AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+                  AdaptiveTheme.of(context).brightness == Brightness.dark
                       ? greyColor
                       : Colors.grey.shade100,
               child: Container(
@@ -132,10 +131,10 @@ Widget sliderMoviePosterShimmer(context) {
         ),
       ),
       Shimmer.fromColors(
-        baseColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+        baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
             ? bgColorDark3
             : Colors.grey.shade300,
-        highlightColor: AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark
+        highlightColor: AdaptiveTheme.of(context).brightness == Brightness.dark
             ? greyColor
             : Colors.grey.shade100,
         child: Container(

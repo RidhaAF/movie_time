@@ -20,12 +20,22 @@ class _WatchlistPageState extends State<WatchlistPage> {
   List watchlist = [];
   GetStorage box = GetStorage();
 
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
+
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      context.read<WatchlistCubit>().getWatchlist();
+      _getData();
       setState(() {});
     }
+  }
+
+  _getData() {
+    context.read<WatchlistCubit>().getWatchlist();
   }
 
   @override
@@ -45,6 +55,27 @@ class _WatchlistPageState extends State<WatchlistPage> {
               return gridMoviePosterShimmer(context);
             } else if (state is WatchlistLoaded) {
               watchlist = state.watchlist;
+              if (watchlist.isEmpty) {
+                return Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/il_watchlist.png',
+                        height: 120,
+                      ),
+                      SizedBox(height: defaultMargin),
+                      Text(
+                        'You don\'t have a watchlist',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: headlineFS,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,

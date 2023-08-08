@@ -26,8 +26,7 @@ class _DefaultSearchBarState extends State<DefaultSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
-
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(defaultRadius),

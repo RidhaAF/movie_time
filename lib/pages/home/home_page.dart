@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).mode == AdaptiveThemeMode.dark;
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Movie Time🍿',

@@ -15,15 +15,12 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   GetStorage box = GetStorage();
   bool isDarkMode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    isDarkMode = box.read('isDarkMode') ?? false;
-  }
+  bool dark = false;
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
+    isDarkMode = dark;
     return Scaffold(
       appBar: appBar(
         title: 'Profile',
@@ -32,8 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.all(defaultMargin),
         child: Container(
           decoration: BoxDecoration(
-            color:
-                box.read('isDarkMode') ?? false ? bgColorDark3 : bgColorLight2,
+            color: dark ? bgColorDark3 : bgColorLight2,
             borderRadius: BorderRadius.circular(defaultRadius),
           ),
           child: ListTile(

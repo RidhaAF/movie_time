@@ -39,6 +39,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.1
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.1
   get_storage: ^2.0.3
   google_fonts: ^5.1.0
   readmore: ^2.2.0
@@ -51,6 +52,16 @@ flutter_icons:
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/ic_launcher_foreground.png"
   remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/images/ic_launcher_foreground.png"
+  color_dark: "#090A0A"
+  android_12:
+    color: "#FFFFFF"
+    icon_background_color: "#FFFFFF"
+    color_dark: "#090A0A"
+    icon_background_color_dark: "#090A0A"
 
 dev_dependencies:
   flutter_lints: ^2.0.0

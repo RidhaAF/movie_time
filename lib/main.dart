@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        initial: savedThemeMode ?? AdaptiveThemeMode.light,
+        initial: savedThemeMode ?? AdaptiveThemeMode.system,
         builder: (lightTheme, darkTheme) => MaterialApp(
           title: 'Movie Time🍿',
           debugShowCheckedModeBanner: false,
