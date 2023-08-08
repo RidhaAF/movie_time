@@ -69,40 +69,62 @@ class SeriesDetailModel {
 
   factory SeriesDetailModel.fromJson(Map<String, dynamic> json) =>
       SeriesDetailModel(
-        adult: json["adult"],
+        adult: json["adult"] ?? false,
         backdropPath: json["backdrop_path"],
-        createdBy: List<CreatedBy>.from(
-            json["created_by"].map((x) => CreatedBy.fromJson(x))),
-        episodeRunTime: List<int>.from(json["episode_run_time"].map((x) => x)),
+        createdBy: (json["created_by"] != null)
+            ? List<CreatedBy>.from(
+                json["created_by"].map((x) => CreatedBy.fromJson(x)))
+            : [],
+        episodeRunTime: (json["episode_run_time"] != null)
+            ? List<int>.from(json["episode_run_time"].map((x) => x))
+            : [],
         firstAirDate: DateTime.parse(json["first_air_date"]),
-        genres: List<Genre>.from(json["genres"].map((x) => Genre.fromJson(x))),
+        genres: (json["genres"] != null)
+            ? List<Genre>.from(json["genres"].map((x) => Genre.fromJson(x)))
+            : [],
         homepage: json["homepage"],
         id: json["id"],
-        inProduction: json["in_production"],
-        languages: List<String>.from(json["languages"].map((x) => x)),
+        inProduction: json["in_production"] ?? false,
+        languages: (json["languages"] != null)
+            ? List<String>.from(json["languages"].map((x) => x))
+            : [],
         lastAirDate: DateTime.parse(json["last_air_date"]),
-        lastEpisodeToAir: TEpisodeToAir.fromJson(json["last_episode_to_air"]),
+        lastEpisodeToAir: (json["last_episode_to_air"] != null)
+            ? TEpisodeToAir.fromJson(json["last_episode_to_air"])
+            : null,
         name: json["name"],
-        nextEpisodeToAir: TEpisodeToAir.fromJson(json["next_episode_to_air"]),
-        networks: List<Network>.from(
-            json["networks"].map((x) => Network.fromJson(x))),
+        nextEpisodeToAir: (json["next_episode_to_air"] != null)
+            ? TEpisodeToAir.fromJson(json["next_episode_to_air"])
+            : null,
+        networks: (json["networks"] != null)
+            ? List<Network>.from(
+                json["networks"].map((x) => Network.fromJson(x)))
+            : [],
         numberOfEpisodes: json["number_of_episodes"],
         numberOfSeasons: json["number_of_seasons"],
-        originCountry: List<String>.from(json["origin_country"].map((x) => x)),
+        originCountry: (json["origin_country"] != null)
+            ? List<String>.from(json["origin_country"].map((x) => x))
+            : [],
         originalLanguage: json["original_language"],
         originalName: json["original_name"],
         overview: json["overview"],
         popularity: json["popularity"].toDouble(),
         posterPath: json["poster_path"],
-        productionCompanies: List<Network>.from(
-            json["production_companies"].map((x) => Network.fromJson(x))),
-        productionCountries: List<ProductionCountry>.from(
-            json["production_countries"]
-                .map((x) => ProductionCountry.fromJson(x))),
-        seasons:
-            List<Season>.from(json["seasons"].map((x) => Season.fromJson(x))),
-        spokenLanguages: List<SpokenLanguage>.from(
-            json["spoken_languages"].map((x) => SpokenLanguage.fromJson(x))),
+        productionCompanies: (json["production_companies"] != null)
+            ? List<Network>.from(
+                json["production_companies"].map((x) => Network.fromJson(x)))
+            : [],
+        productionCountries: (json["production_countries"] != null)
+            ? List<ProductionCountry>.from(json["production_countries"]
+                .map((x) => ProductionCountry.fromJson(x)))
+            : [],
+        seasons: (json["seasons"] != null)
+            ? List<Season>.from(json["seasons"].map((x) => Season.fromJson(x)))
+            : [],
+        spokenLanguages: (json["spoken_languages"] != null)
+            ? List<SpokenLanguage>.from(
+                json["spoken_languages"].map((x) => SpokenLanguage.fromJson(x)))
+            : [],
         status: json["status"],
         tagline: json["tagline"],
         type: json["type"],

@@ -118,10 +118,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             isWatchlist
                                 ? context
                                     .read<WatchlistCubit>()
-                                    .addToWatchlist(movie: movie.toJson())
+                                    .addToWatchlist(movie.toJson())
                                 : context
                                     .read<WatchlistCubit>()
-                                    .removeFromWatchlist(movie: movie.toJson());
+                                    .removeFromWatchlist(movie.toJson());
 
                             DefaultSnackBar.show(
                               context,
