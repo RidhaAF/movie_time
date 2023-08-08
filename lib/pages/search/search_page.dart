@@ -107,7 +107,6 @@ class _SearchPageState extends State<SearchPage> {
                         customBorder: cardBorderRadius,
                         onTap: (() {
                           int id = searchResults[index]['id'];
-                          print(id);
 
                           if (searchResults[index]['title'] != null) {
                             Navigator.push(
