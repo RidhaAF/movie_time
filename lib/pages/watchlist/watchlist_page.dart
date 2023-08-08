@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/default_404.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
@@ -56,25 +56,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
             } else if (state is WatchlistLoaded) {
               watchlist = state.watchlist;
               if (watchlist.isEmpty) {
-                return Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/il_watchlist.png',
-                        height: 120,
-                      ),
-                      SizedBox(height: defaultMargin),
-                      Text(
-                        'You don\'t have a watchlist',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: headlineFS,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return const Default404();
               }
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -129,25 +111,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                 },
               );
             }
-            return Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/il_watchlist.png',
-                    height: 120,
-                  ),
-                  SizedBox(height: defaultMargin),
-                  Text(
-                    'You don\'t have a watchlist',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: headlineFS,
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return const Default404();
           },
         ),
       ),

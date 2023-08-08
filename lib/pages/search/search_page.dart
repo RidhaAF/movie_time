@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/default_404.dart';
 import 'package:movie_time/components/default_search_bar.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/search/search_cubit.dart';
@@ -57,7 +57,7 @@ class _SearchPageState extends State<SearchPage> {
             child: DefaultSearchBar(
               controller: _searchCtrl,
               focusNode: _searchFocus,
-              hintText: 'Search movies, series, cast...',
+              hintText: 'Search movie, series, cast...',
               onChanged: (value) => _search(value),
               onPressed: () => _clearSearch(),
             ),
@@ -66,24 +66,10 @@ class _SearchPageState extends State<SearchPage> {
             child: BlocBuilder<SearchCubit, SearchState>(
               builder: (context, state) {
                 if (state is SearchInitial) {
-                  return Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/il_search.png',
-                          height: 200,
-                        ),
-                        SizedBox(height: defaultMargin),
-                        Text(
-                          'Search for movies, series, cast...',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: headlineFS,
-                          ),
-                        ),
-                      ],
-                    ),
+                  return const Default404(
+                    image: 'assets/images/il_search.png',
+                    size: 200,
+                    title: 'Search your favorite movie,\nseries or cast',
                   );
                 } else if (state is SearchLoading) {
                   return gridMoviePosterShimmer(context);
@@ -145,24 +131,9 @@ class _SearchPageState extends State<SearchPage> {
                     },
                   );
                 }
-                return Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/il_watchlist.png',
-                        height: 120,
-                      ),
-                      SizedBox(height: defaultMargin),
-                      Text(
-                        'Keyword not found',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: headlineFS,
-                        ),
-                      ),
-                    ],
-                  ),
+                return const Default404(
+                  image: 'assets/images/il_search.png',
+                  title: 'Search your favorite movie,\nseries or cast',
                 );
               },
             ),
