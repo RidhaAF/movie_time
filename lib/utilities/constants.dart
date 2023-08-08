@@ -127,6 +127,7 @@ AppBar appBar({String? title, TextStyle? style}) {
     ),
     backgroundColor: primaryColor,
     centerTitle: true,
+    elevation: 0,
   );
 }
 

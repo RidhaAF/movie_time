@@ -30,12 +30,16 @@ class _HomePageState extends State<HomePage> {
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
-      context.read<PopularMovieCubit>().getPopularMovies();
-      context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
-      context.read<UpcomingMovieCubit>().getUpcomingMovies();
+      _getData();
       setState(() {});
     }
+  }
+
+  _getData() {
+    context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
+    context.read<PopularMovieCubit>().getPopularMovies();
+    context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
+    context.read<UpcomingMovieCubit>().getUpcomingMovies();
   }
 
   @override

@@ -35,18 +35,22 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
             label: 'Home',
+            tooltip: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search_rounded),
             label: 'Search',
+            tooltip: 'Search',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_rounded),
             label: 'Watchlist',
+            tooltip: 'Watchlist',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_rounded),
             label: 'Profile',
+            tooltip: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,
