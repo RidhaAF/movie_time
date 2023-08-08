@@ -108,21 +108,18 @@ class _SearchPageState extends State<SearchPage> {
                         onTap: (() {
                           int id = searchResults[index]['id'];
 
-                          if (searchResults[index]['title'] != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MovieDetailPage(id: id),
-                              ),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SeriesDetailPage(id: id),
-                              ),
-                            );
-                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                final isMovie =
+                                    searchResults[index]['title'] != null;
+                                return isMovie
+                                    ? MovieDetailPage(id: id)
+                                    : SeriesDetailPage(id: id);
+                              },
+                            ),
+                          );
                         }),
                         child: Container(
                           width: 102,

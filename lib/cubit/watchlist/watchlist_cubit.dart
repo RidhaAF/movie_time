@@ -25,14 +25,14 @@ class WatchlistCubit extends Cubit<WatchlistState> {
     }
   }
 
-  void addToWatchlist({required Map<String, dynamic> movie}) {
-    watchlist.add(movie);
+  void addToWatchlist(Map<String, dynamic> item) {
+    watchlist.add(item);
     box.write('watchlist', watchlist);
     emit(WatchlistLoaded(watchlist));
   }
 
-  void removeFromWatchlist({required Map<String, dynamic> movie}) {
-    watchlist.removeWhere((e) => e['id'] == movie['id']);
+  void removeFromWatchlist(Map<String, dynamic> item) {
+    watchlist.removeWhere((e) => e['id'] == item['id']);
     box.write('watchlist', watchlist);
     emit(WatchlistLoaded(watchlist));
   }

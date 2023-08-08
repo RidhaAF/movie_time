@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
+import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
@@ -18,6 +20,7 @@ class SeriesDetailPage extends StatefulWidget {
 }
 
 class _SeriesDetailPageState extends State<SeriesDetailPage> {
+  late SeriesDetailModel series;
   bool isWatchlist = false;
   var top = 0.0;
 
@@ -25,6 +28,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   void initState() {
     super.initState();
     _getData();
+    _getWatchlist();
   }
 
   Future<void> _onRefresh() async {
@@ -37,6 +41,19 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
 
   _getData() {
     context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
+  }
+
+  _getWatchlist() {
+    if (context.read<WatchlistCubit>().getWatchlistData() != null) {
+      List watchlist = context.read<WatchlistCubit>().getWatchlistData() ?? [];
+      for (Map item in watchlist) {
+        if (item['id'] == widget.id) {
+          setState(() {
+            isWatchlist = true;
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -52,6 +69,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
             } else if (state is SeriesDetailLoading) {
               return loadingIndicator();
             } else if (state is SeriesDetailLoaded) {
+              series = state.seriesDetail;
               return CustomScrollView(
                 slivers: [
                   SliverAppBar(
@@ -87,6 +105,23 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                         onTap: () {
                           setState(() {
                             isWatchlist = !isWatchlist;
+
+                            isWatchlist
+                                ? context
+                                    .read<WatchlistCubit>()
+                                    .addToWatchlist(series.toJson())
+                                : context
+                                    .read<WatchlistCubit>()
+                                    .removeFromWatchlist(series.toJson());
+
+                            DefaultSnackBar.show(
+                              context,
+                              isWatchlist
+                                  ? 'Added to Watchlist'
+                                  : 'Removed from Watchlist',
+                              backgroundColor:
+                                  isWatchlist ? Colors.green : primaryColor,
+                            );
                           });
                         },
                         child: Container(
@@ -117,14 +152,14 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                           duration: const Duration(milliseconds: 300),
                           opacity: top <= 130.0 ? 1.0 : 0.0,
                           child: Text(
-                            state.seriesDetail.name ?? '',
+                            series.name ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: bold,
                             ),
                           ),
                         ),
                         collapseMode: CollapseMode.parallax,
-                        background: seriesBackground(state.seriesDetail),
+                        background: seriesBackground(series),
                       );
                     }),
                   ),
@@ -135,15 +170,15 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                           margin: EdgeInsets.all(defaultMargin),
                           child: Row(
                             children: [
-                              seriesPoster(state.seriesDetail),
+                              seriesPoster(series),
                               SizedBox(width: defaultMargin),
-                              seriesInfo(state.seriesDetail),
+                              seriesInfo(series),
                             ],
                           ),
                         ),
-                        seriesOverview(state.seriesDetail),
+                        seriesOverview(series),
                         SizedBox(height: defaultMargin),
-                        seriesRating(state.seriesDetail),
+                        seriesRating(series),
                         SizedBox(height: defaultMargin),
                         // seriesCast(),
                         // seriesRecommendation(),

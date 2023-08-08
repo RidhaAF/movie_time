@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
+import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 
@@ -16,6 +17,7 @@ class WatchlistPage extends StatefulWidget {
 }
 
 class _WatchlistPageState extends State<WatchlistPage> {
+  List watchlist = [];
   GetStorage box = GetStorage();
 
   Future<void> _onRefresh() async {
@@ -42,6 +44,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
             } else if (state is WatchlistLoading) {
               return gridMoviePosterShimmer(context);
             } else if (state is WatchlistLoaded) {
+              watchlist = state.watchlist;
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -50,30 +53,37 @@ class _WatchlistPageState extends State<WatchlistPage> {
                   mainAxisSpacing: 8,
                 ),
                 padding: EdgeInsets.all(defaultMargin),
-                itemCount: state.watchlist.length,
+                itemCount: watchlist.length,
                 itemBuilder: (context, index) {
                   return InkWell(
                     customBorder: cardBorderRadius,
                     onTap: (() {
+                      int id = watchlist[index]['id'];
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MovieDetailPage(
-                            id: state.watchlist[index]['id'],
-                          ),
+                          builder: (context) {
+                            final isMovie = watchlist[index]['title'] != null;
+                            return isMovie
+                                ? MovieDetailPage(id: id)
+                                : SeriesDetailPage(id: id);
+                          },
                         ),
-                      ).then((value) => setState(() {
-                            context.read<WatchlistCubit>().getWatchlistData();
-                          }));
+                      ).then((value) {
+                        setState(() {
+                          context.read<WatchlistCubit>().getWatchlistData();
+                        });
+                      });
                     }),
                     child: Container(
                       width: 102,
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         image: DecorationImage(
-                          image: state.watchlist[index]?['poster_path'] != null
+                          image: watchlist[index]?['poster_path'] != null
                               ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${state.watchlist[index]?['poster_path']}',
+                                  '${Env.imageBaseURL}w500/${watchlist[index]?['poster_path']}',
                                 )
                               : const AssetImage('assets/images/img_null.png')
                                   as ImageProvider,
