@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -59,6 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   }
                 });
               },
+              activeColor: Platform.isAndroid ? primaryColor : null,
             ),
           ),
         ),

@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: GoogleFonts.plusJakartaSans().fontFamily,
           textTheme: TextTheme(
-            subtitle2: GoogleFonts.plusJakartaSans(
+            titleSmall: GoogleFonts.plusJakartaSans(
               color: greyColor,
             ),
           ),
@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: GoogleFonts.plusJakartaSans().fontFamily,
           textTheme: TextTheme(
-            subtitle2: GoogleFonts.plusJakartaSans(
+            titleSmall: GoogleFonts.plusJakartaSans(
               color: mutedColor,
             ),
           ),

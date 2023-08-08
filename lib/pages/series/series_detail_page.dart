@@ -24,15 +24,19 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
+    _getData();
   }
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
+      _getData();
       setState(() {});
     }
+  }
+
+  _getData() {
+    context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
   }
 
   @override
@@ -94,10 +98,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            isWatchlist == false
-                                ? Icons.bookmark_outline
-                                : Icons.bookmark_outlined,
-                            semanticLabel: 'Add to Watchlist',
+                            isWatchlist
+                                ? Icons.bookmark_outlined
+                                : Icons.bookmark_outline_outlined,
+                            semanticLabel: isWatchlist
+                                ? 'Add to Watchlist'
+                                : 'Remove from Watchlist',
                           ),
                         ),
                       ),
@@ -287,7 +293,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           const SizedBox(height: 8),
           ReadMoreText(
             series?.overview ?? '',
-            style: Theme.of(context).textTheme.subtitle2,
+            style: Theme.of(context).textTheme.titleSmall,
             textAlign: TextAlign.justify,
             trimLines: 3,
             trimMode: TrimMode.Line,
