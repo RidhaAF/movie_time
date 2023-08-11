@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ridhaaf.movie_time">
+    package="id.co.ridhaaf.movie_time">
    <application
-        android:label="movie_time"
+        android:label="Movie Time"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

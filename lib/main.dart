@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,6 +14,8 @@ import 'package:movie_time/cubit/search/search_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
+import 'package:movie_time/firebase_options.dart';
+import 'package:movie_time/pages/auth/sign_in_page.dart';
 import 'package:movie_time/pages/main_page.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/pages/movie/now_playing_movies_page.dart';
@@ -21,8 +24,12 @@ import 'package:movie_time/pages/movie/upcoming_movies_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 
 void main() async {
-  GetStorage.init();
+  await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    name: 'Movie Time',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   runApp(MyApp(savedThemeMode: savedThemeMode));
 }
@@ -30,6 +37,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
   const MyApp({Key? key, this.savedThemeMode}) : super(key: key);
+
+  Widget getInitialRoute() {
+    final box = GetStorage();
+    if (box.read('isLogin') == true && box.read('token') != null) {
+      return const MainPage();
+    } else {
+      return const SignInPage();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +115,10 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,
+          home: getInitialRoute(),
           routes: {
-            '/': (context) => const MainPage(),
+            '/sign-in': (context) => const SignInPage(),
+            '/home': (context) => const MainPage(),
             '/movie/detail': (context) => const MovieDetailPage(),
             '/movie/now-playing': (context) => const NowPlayingMoviesPages(),
             '/movie/popular': (context) => const PopularMoviesPage(),

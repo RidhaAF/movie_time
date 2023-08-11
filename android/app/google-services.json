@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "760631040465",
+    "project_id": "movie-time-29763",
+    "storage_bucket": "movie-time-29763.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760631040465:android:29a724a97128d339f2e8f0",
+        "android_client_info": {
+          "package_name": "id.co.ridhaaf.movie_time"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760631040465-bt2gnvdteefnqknebka62ljg4l1i4h23.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.co.ridhaaf.movie_time",
+            "certificate_hash": "6dfd858bd0e5fe4fad71083486f3fee5e499b88a"
+          }
+        },
+        {
+          "client_id": "760631040465-9hrfhe4h5vnlkqldt2vgaohhg01vmrrv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj4IbWqLOOWp8lAUio9VM1oax-Uf9PrGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760631040465-9hrfhe4h5vnlkqldt2vgaohhg01vmrrv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "760631040465-oo7setvbd836gj3p7pbkabmdtg5in8tu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "id.co.ridhaaf.movieTime"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
