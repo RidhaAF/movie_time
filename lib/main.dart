@@ -12,6 +12,7 @@ import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/search/search_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
+import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/firebase_options.dart';
@@ -73,6 +74,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SeriesDetailCubit(),
+        ),
+        BlocProvider(
+          create: (context) => SeriesSeasonDetailCubit(),
         ),
         BlocProvider(
           create: (context) => WatchlistCubit(),

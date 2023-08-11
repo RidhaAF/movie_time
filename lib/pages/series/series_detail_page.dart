@@ -5,10 +5,13 @@ import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
+import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/series_detail_model.dart';
+import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
 class SeriesDetailPage extends StatefulWidget {
@@ -19,16 +22,24 @@ class SeriesDetailPage extends StatefulWidget {
   State<SeriesDetailPage> createState() => _SeriesDetailPageState();
 }
 
-class _SeriesDetailPageState extends State<SeriesDetailPage> {
+class _SeriesDetailPageState extends State<SeriesDetailPage>
+    with TickerProviderStateMixin {
   late SeriesDetailModel series;
   bool isWatchlist = false;
   var top = 0.0;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _getData();
     _getWatchlist();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
   }
 
   Future<void> _onRefresh() async {
@@ -41,6 +52,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
 
   _getData() {
     context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
+    context
+        .read<SeriesSeasonDetailCubit>()
+        .getSeriesSeasonDetail(widget.id ?? 0, 1);
   }
 
   _getWatchlist() {
@@ -178,6 +192,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                         ),
                         seriesOverview(series),
                         SizedBox(height: defaultMargin),
+                        seriesSeason(series),
+                        SizedBox(height: defaultMargin),
                         seriesRating(series),
                         SizedBox(height: defaultMargin),
                         // seriesCast(),
@@ -236,6 +252,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   }
 
   Widget seriesInfo(SeriesDetailModel? series) {
+    String totalSeason = totalSeasonsFormattter(series?.numberOfSeasons ?? 0);
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +267,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${series?.firstAirDate?.toString().substring(0, 4)}',
+            '${series?.firstAirDate?.toString().substring(0, 4)} • $totalSeason',
             style: GoogleFonts.plusJakartaSans(
               fontSize: footnoteFS,
               fontWeight: semiBold,
@@ -351,7 +369,196 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
     );
   }
 
+  Widget seriesSeason(SeriesDetailModel? series) {
+    final seasons =
+        series?.seasons?.where((season) => season.seasonNumber != 0);
+    _tabController = TabController(length: seasons?.length ?? 0, vsync: this);
+
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          child: TabBar(
+            tabs: seasons
+                    ?.map(
+                        (season) => Tab(text: 'Season ${season.seasonNumber}'))
+                    .toList() ??
+                [],
+            controller: _tabController,
+            isScrollable: true,
+            indicatorColor: primaryColor,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelStyle: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+              fontWeight: bold,
+            ),
+            unselectedLabelColor: mutedColor,
+            unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+            ),
+            onTap: (value) {
+              context
+                  .read<SeriesSeasonDetailCubit>()
+                  .getSeriesSeasonDetail(series?.id ?? 0, value + 1);
+            },
+          ),
+        ),
+        SizedBox(
+          height: 192,
+          child: TabBarView(
+            controller: _tabController,
+            children: seasons?.map((season) {
+                  String totalEpisode =
+                      totalEpisodesFormatter(season.episodeCount ?? 0);
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: defaultMargin / 2),
+                      BlocBuilder<SeriesSeasonDetailCubit,
+                          SeriesSeasonDetailState>(
+                        builder: (context, state) {
+                          if (state is SeriesSeasonDetailInitial) {
+                            return Container();
+                          } else if (state is SeriesSeasonDetailLoading) {
+                            return loadingIndicator();
+                          } else if (state is SeriesSeasonDetailLoaded) {
+                            final detail = state.seriesSeasonDetail;
+                            final episodes = detail.episodes;
+
+                            return Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                    left: defaultMargin, right: 8),
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: episodes?.length ?? 0,
+                                itemBuilder: (context, i) {
+                                  Episode episode = episodes![i];
+                                  String seasonEpisode = seasonEpisodeFormatter(
+                                      episode.seasonNumber ?? 0,
+                                      episode.episodeNumber ?? 0);
+                                  String runtime =
+                                      runtimeFormatter(episode.runtime ?? 0);
+
+                                  return Container(
+                                    width: 280,
+                                    height: 128,
+                                    margin: EdgeInsets.only(
+                                        right: defaultMargin / 2),
+                                    decoration: BoxDecoration(
+                                      color: darkGreyColor,
+                                      borderRadius:
+                                          BorderRadius.circular(defaultRadius),
+                                    ),
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.all(defaultMargin / 2),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '$seasonEpisode • ${dateFormatter(episode.airDate ?? DateTime.now())}',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: subheadlineFS,
+                                              fontWeight: semiBold,
+                                            ),
+                                          ),
+                                          Text(
+                                            episode.name ?? '',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: secondaryColor,
+                                              fontSize: caption1FS,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            episode.overview ?? '',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: mutedColor,
+                                              fontSize: caption1FS,
+                                            ),
+                                          ),
+                                          SizedBox(height: defaultMargin / 2),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.star_rounded,
+                                                color: yellowColor,
+                                                size: 16,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                episode.voteAverage
+                                                        ?.toStringAsFixed(1) ??
+                                                    '0',
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  fontSize: caption1FS,
+                                                  fontWeight: bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                '/10',
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  color: mutedColor,
+                                                  fontSize: caption1FS,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                runtime,
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  color: secondaryColor,
+                                                  fontSize: caption1FS,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                          return Container();
+                        },
+                      ),
+                      SizedBox(height: defaultMargin / 2),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: defaultMargin),
+                        child: Text(
+                          totalEpisode,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: secondaryColor,
+                            fontSize: caption1FS,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList() ??
+                [],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget seriesRating(SeriesDetailModel? series) {
+    String voteCount = voteCountFormatter(series?.voteCount ?? 0);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Row(
@@ -363,14 +570,14 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           ),
           const SizedBox(width: 4),
           Text(
-            series?.voteAverage?.toStringAsFixed(1) ?? '',
+            series?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
               fontSize: headlineFS,
               fontWeight: bold,
             ),
           ),
           Text(
-            '/10 • ${series?.voteCount.toString()}',
+            '/10 • $voteCount',
             style: GoogleFonts.plusJakartaSans(
               color: mutedColor,
               fontSize: caption1FS,

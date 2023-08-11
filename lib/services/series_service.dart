@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
+import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/env.dart';
 
 class SeriesService {
@@ -30,6 +31,22 @@ class SeriesService {
     try {
       var response = await Dio().get(url);
       final data = SeriesDetailModel.fromJson(response.data);
+      return data;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<SeriesSeasonDetailModel?> getSeriesSeasonDetail(
+    int id,
+    int seasonNumber,
+  ) async {
+    String url =
+        '$baseUrl/tv/$id/season/$seasonNumber?api_key=$apiKey&language=$language';
+
+    try {
+      var response = await Dio().get(url);
+      final data = SeriesSeasonDetailModel.fromJson(response.data);
       return data;
     } catch (e) {
       throw Exception(e);
