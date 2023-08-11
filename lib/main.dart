@@ -27,7 +27,6 @@ void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: 'Movie Time',
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
