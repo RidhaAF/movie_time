@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
@@ -426,7 +427,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           if (state is SeriesSeasonDetailInitial) {
                             return Container();
                           } else if (state is SeriesSeasonDetailLoading) {
-                            return loadingIndicator();
+                            return horizontalEpisodesList();
                           } else if (state is SeriesSeasonDetailLoaded) {
                             final detail = state.seriesSeasonDetail;
                             final episodes = detail.episodes;
