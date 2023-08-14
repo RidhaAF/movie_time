@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:movie_time/models/aggregate_credit_model.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
+import 'package:movie_time/models/recommendation_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/env.dart';
@@ -61,6 +62,19 @@ class SeriesService {
     try {
       var response = await Dio().get(url);
       final data = AggregateCreditModel.fromJson(response.data);
+      return data;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<RecommendationSeriesModel?> getRecommendationSeries(int id) async {
+    String url =
+        '$baseUrl/tv/$id/recommendations?api_key=$apiKey&language=$language&page=1';
+
+    try {
+      var response = await Dio().get(url);
+      final data = RecommendationSeriesModel.fromJson(response.data);
       return data;
     } catch (e) {
       throw Exception(e);

@@ -5,11 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/aggregate_credit/aggregate_credit_cubit.dart';
-import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
+import 'package:movie_time/cubit/recommendation_series/recommendation_series_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/aggregate_credit_model.dart';
+import 'package:movie_time/models/recommendation_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
@@ -60,6 +61,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
         .read<SeriesSeasonDetailCubit>()
         .getSeriesSeasonDetail(widget.id ?? 0, 1);
     context.read<AggregateCreditCubit>().getAggregateCredits(widget.id ?? 0);
+    context
+        .read<RecommendationSeriesCubit>()
+        .getRecommendationSeries(widget.id ?? 0);
   }
 
   _getWatchlist() {
@@ -203,7 +207,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                         seriesRating(series),
                         SizedBox(height: defaultMargin),
                         seriesCast(),
-                        // seriesRecommendation(),
+                        seriesRecommendation(),
                         SizedBox(height: defaultMargin),
                       ],
                     ),
@@ -692,9 +696,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   Widget seriesRecommendation() {
-    return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
+    return BlocBuilder<RecommendationSeriesCubit, RecommendationSeriesState>(
       builder: (context, state) {
-        if (state is RecommendationMovieLoaded) {
+        if (state is RecommendationSeriesLoaded) {
+          RecommendationSeriesModel recommendationSeries =
+              state.recommendationSeries;
+
           return Container(
             margin: EdgeInsets.only(bottom: defaultMargin),
             child: Column(
@@ -717,7 +724,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                   child: ListView.builder(
                     padding: EdgeInsets.only(left: defaultMargin, right: 8),
                     scrollDirection: Axis.horizontal,
-                    itemCount: state.recommendationMovie.results.length,
+                    itemCount: recommendationSeries.results?.length,
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: (() {
@@ -725,8 +732,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                             context,
                             MaterialPageRoute(
                               builder: (context) => SeriesDetailPage(
-                                id: state
-                                    .recommendationMovie.results[index]?.id,
+                                id: recommendationSeries.results?[index].id,
                               ),
                             ),
                           );
@@ -737,11 +743,11 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           decoration: BoxDecoration(
                             color: secondaryColor,
                             image: DecorationImage(
-                              image: state.recommendationMovie.results[index]
-                                          ?.posterPath !=
+                              image: recommendationSeries
+                                          .results?[index].posterPath !=
                                       null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${recommendationSeries.results?[index].posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')

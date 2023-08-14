@@ -11,6 +11,7 @@ import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart'
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
+import 'package:movie_time/cubit/recommendation_series/recommendation_series_cubit.dart';
 import 'package:movie_time/cubit/search/search_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
@@ -81,6 +82,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AggregateCreditCubit(),
+        ),
+        BlocProvider(
+          create: (context) => RecommendationSeriesCubit(),
         ),
         BlocProvider(
           create: (context) => WatchlistCubit(),
