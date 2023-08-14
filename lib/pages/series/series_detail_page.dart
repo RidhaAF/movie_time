@@ -4,11 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
-import 'package:movie_time/cubit/credit/credit_cubit.dart';
+import 'package:movie_time/cubit/aggregate_credit/aggregate_credit_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
+import 'package:movie_time/models/aggregate_credit_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
@@ -58,6 +59,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
     context
         .read<SeriesSeasonDetailCubit>()
         .getSeriesSeasonDetail(widget.id ?? 0, 1);
+    context.read<AggregateCreditCubit>().getAggregateCredits(widget.id ?? 0);
   }
 
   _getWatchlist() {
@@ -200,7 +202,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                         SizedBox(height: defaultMargin),
                         seriesRating(series),
                         SizedBox(height: defaultMargin),
-                        // seriesCast(),
+                        seriesCast(),
                         // seriesRecommendation(),
                         SizedBox(height: defaultMargin),
                       ],
@@ -616,14 +618,16 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
         ),
         Container(
           margin: const EdgeInsets.only(top: 8),
-          height: 148,
-          child: BlocBuilder<CreditCubit, CreditState>(
+          height: 152,
+          child: BlocBuilder<AggregateCreditCubit, AggregateCreditState>(
             builder: (context, state) {
-              if (state is CreditLoaded) {
+              if (state is AggregateCreditLoaded) {
+                AggregateCreditModel? aggregateCredit = state.aggregateCredit;
+
                 return ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.credit.cast?.length,
+                  itemCount: aggregateCredit.cast?.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
@@ -639,20 +643,21 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                               color: secondaryColor,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: state.credit.cast?[index].profilePath !=
-                                        null
-                                    ? NetworkImage(
-                                        '${Env.imageBaseURL}w500/${state.credit.cast?[index].profilePath}',
-                                      )
-                                    : const AssetImage(
-                                            'assets/images/img_null.png')
-                                        as ImageProvider,
+                                image:
+                                    aggregateCredit.cast?[index].profilePath !=
+                                            null
+                                        ? NetworkImage(
+                                            '${Env.imageBaseURL}w500/${aggregateCredit.cast?[index].profilePath}',
+                                          )
+                                        : const AssetImage(
+                                                'assets/images/img_null.png')
+                                            as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           Text(
-                            state.credit.cast?[index].name ?? '',
+                            aggregateCredit.cast?[index].name ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                               fontWeight: bold,
@@ -663,7 +668,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            state.credit.cast?[index].character ?? '',
+                            aggregateCredit.cast?[index].roles?[0].character ??
+                                '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                             ),

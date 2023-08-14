@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/cubit/aggregate_credit/aggregate_credit_cubit.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
@@ -77,6 +78,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SeriesSeasonDetailCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AggregateCreditCubit(),
         ),
         BlocProvider(
           create: (context) => WatchlistCubit(),

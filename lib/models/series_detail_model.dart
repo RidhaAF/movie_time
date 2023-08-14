@@ -189,11 +189,12 @@ class CreatedBy {
   });
 
   factory CreatedBy.fromJson(Map<String, dynamic> json) => CreatedBy(
-        id: json["id"],
-        creditId: json["credit_id"],
-        name: json["name"],
-        gender: json["gender"],
-        profilePath: json["profile_path"],
+        id: (json["id"]) != null ? json["id"] : 0,
+        creditId: (json["credit_id"]) != null ? json["credit_id"] : null,
+        name: (json["name"]) != null ? json["name"] : null,
+        gender: (json["gender"]) != null ? json["gender"] : 0,
+        profilePath:
+            (json["profile_path"]) != null ? json["profile_path"] : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -255,18 +256,23 @@ class TEpisodeToAir {
   });
 
   factory TEpisodeToAir.fromJson(Map<String, dynamic> json) => TEpisodeToAir(
-        airDate: DateTime.parse(json["air_date"]),
-        episodeNumber: json["episode_number"],
-        id: json["id"],
-        name: json["name"],
-        overview: json["overview"],
-        productionCode: json["production_code"],
-        runtime: json["runtime"],
-        seasonNumber: json["season_number"],
-        showId: json["show_id"],
-        stillPath: json["still_path"],
-        voteAverage: json["vote_average"].toDouble(),
-        voteCount: json["vote_count"],
+        airDate: DateTime.parse(json["air_date"] ?? "0000-00-00"),
+        episodeNumber:
+            (json["episode_number"]) != null ? json["episode_number"] : 0,
+        id: (json["id"]) != null ? json["id"] : 0,
+        name: (json["name"]) != null ? json["name"] : null,
+        overview: (json["overview"]) != null ? json["overview"] : null,
+        productionCode:
+            (json["production_code"]) != null ? json["production_code"] : null,
+        runtime: (json["runtime"]) != null ? json["runtime"] : 0,
+        seasonNumber:
+            (json["season_number"]) != null ? json["season_number"] : 0,
+        showId: (json["show_id"]) != null ? json["show_id"] : 0,
+        stillPath: (json["still_path"]) != null ? json["still_path"] : null,
+        voteAverage: (json["vote_average"]) != null
+            ? json["vote_average"].toDouble()
+            : 0.0,
+        voteCount: (json["vote_count"]) != null ? json["vote_count"] : 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -355,13 +361,15 @@ class Season {
   });
 
   factory Season.fromJson(Map<String, dynamic> json) => Season(
-        airDate: DateTime.parse(json["air_date"]),
-        episodeCount: json["episode_count"],
-        id: json["id"],
-        name: json["name"],
-        overview: json["overview"],
-        posterPath: json["poster_path"],
-        seasonNumber: json["season_number"],
+        airDate: DateTime.parse(json["air_date"] ?? "0000-00-00"),
+        episodeCount:
+            (json["episode_count"]) != null ? json["episode_count"] : 0,
+        id: (json["id"]) != null ? json["id"] : 0,
+        name: (json["name"]) != null ? json["name"] : null,
+        overview: (json["overview"]) != null ? json["overview"] : null,
+        posterPath: (json["poster_path"]) != null ? json["poster_path"] : null,
+        seasonNumber:
+            (json["season_number"]) != null ? json["season_number"] : 0,
       );
 
   Map<String, dynamic> toJson() => {
