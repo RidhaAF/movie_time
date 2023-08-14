@@ -26,15 +26,15 @@ String seasonEpisodeFormatter(int seasonNumber, int episodeNumber) {
 
 String runtimeFormatter(int minutes) {
   if (minutes < 60) {
-    return '$minutes min';
+    return '${minutes}min';
   } else {
     int hours = minutes ~/ 60;
     int remainingMinutes = minutes % 60;
 
     if (remainingMinutes == 0) {
-      return '$hours h';
+      return '${hours}h';
     } else {
-      return '$hours h $remainingMinutes min';
+      return '${hours}h ${remainingMinutes}min';
     }
   }
 }

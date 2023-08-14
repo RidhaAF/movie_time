@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +28,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   late SeriesDetailModel series;
   bool isWatchlist = false;
   var top = 0.0;
+  bool dark = false;
   late TabController _tabController;
 
   @override
@@ -72,6 +74,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: RefreshIndicator(
         color: primaryColor,
@@ -388,6 +391,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
             isScrollable: true,
             indicatorColor: primaryColor,
             indicatorSize: TabBarIndicatorSize.label,
+            labelColor: dark ? whiteColor : blackColor,
             labelStyle: GoogleFonts.plusJakartaSans(
               fontSize: title3FS,
               fontWeight: bold,
@@ -448,7 +452,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                     margin: EdgeInsets.only(
                                         right: defaultMargin / 2),
                                     decoration: BoxDecoration(
-                                      color: darkGreyColor,
+                                      color:
+                                          dark ? darkGreyColor : white70Color,
                                       borderRadius:
                                           BorderRadius.circular(defaultRadius),
                                     ),
@@ -471,7 +476,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                           Text(
                                             episode.name ?? '',
                                             style: GoogleFonts.plusJakartaSans(
-                                              color: secondaryColor,
+                                              color: dark
+                                                  ? secondaryColor
+                                                  : greyColor,
                                               fontSize: caption1FS,
                                             ),
                                           ),
@@ -482,6 +489,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                               color: mutedColor,
                                               fontSize: caption1FS,
                                             ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 5,
                                           ),
                                           SizedBox(height: defaultMargin / 2),
                                           Row(
@@ -517,7 +526,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                                 runtime,
                                                 style:
                                                     GoogleFonts.plusJakartaSans(
-                                                  color: secondaryColor,
+                                                  color: dark
+                                                      ? secondaryColor
+                                                      : greyColor,
                                                   fontSize: caption1FS,
                                                 ),
                                               ),
@@ -541,7 +552,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                         child: Text(
                           totalEpisode,
                           style: GoogleFonts.plusJakartaSans(
-                            color: secondaryColor,
+                            color: dark ? secondaryColor : greyColor,
                             fontSize: caption1FS,
                           ),
                         ),

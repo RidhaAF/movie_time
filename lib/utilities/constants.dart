@@ -12,6 +12,7 @@ Color darkColor = const Color(0xFF090A0A);
 Color darkGreyColor = const Color(0xFF1D1D1D);
 Color blackColor = Colors.black;
 Color whiteColor = Colors.white;
+Color white70Color = Colors.white70;
 Color yellowColor = Colors.yellow.shade700;
 Color bgColorDark1 = const Color(0xFF090A0A);
 Color bgColorDark2 = Colors.black;
