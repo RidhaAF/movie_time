@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
+  sdk: ">=3.0.6 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,18 +30,24 @@ environment:
 dependencies:
   adaptive_theme: ^3.1.1
   bloc: ^8.1.0
+  cached_network_image: ^3.2.3
   carousel_slider: ^4.1.1
   cupertino_icons: ^1.0.2
-  dio: ^4.0.6
+  dio: ^5.1.2
   equatable: ^2.0.5
+  firebase_auth: ^4.7.2
+  firebase_core: ^2.15.0
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.1
   get_storage: ^2.0.3
-  google_fonts: ^4.0.3
+  google_fonts: ^5.1.0
+  google_sign_in: ^6.1.4
+  intl: ^0.18.1
   readmore: ^2.2.0
-  shimmer: ^2.0.0
+  shimmer: ^3.0.0
 
 flutter_icons:
   android: true
@@ -50,6 +56,16 @@ flutter_icons:
   adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/ic_launcher_foreground.png"
   remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/images/ic_launcher_foreground.png"
+  color_dark: "#090A0A"
+  android_12:
+    color: "#FFFFFF"
+    icon_background_color: "#FFFFFF"
+    color_dark: "#090A0A"
+    icon_background_color_dark: "#090A0A"
 
 dev_dependencies:
   flutter_lints: ^2.0.0

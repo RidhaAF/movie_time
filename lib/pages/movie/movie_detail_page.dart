@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
 class MovieDetailPage extends StatefulWidget {
@@ -28,11 +30,27 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   @override
   void initState() {
     super.initState();
+    _getData();
+    _getWatchlist();
+  }
+
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      _getData();
+      setState(() {});
+    }
+  }
+
+  _getData() {
     context.read<MovieDetailCubit>().getMovieDetail(widget.id ?? 0);
     context.read<CreditCubit>().getCredits(widget.id ?? 0);
     context
         .read<RecommendationMovieCubit>()
         .getRecommendationMovie(widget.id ?? 0);
+  }
+
+  _getWatchlist() {
     if (context.read<WatchlistCubit>().getWatchlistData() != null) {
       List watchlist = context.read<WatchlistCubit>().getWatchlistData() ?? [];
       for (Map item in watchlist) {
@@ -42,18 +60,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           });
         }
       }
-    }
-  }
-
-  Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      context.read<MovieDetailCubit>().getMovieDetail(widget.id ?? 0);
-      context.read<CreditCubit>().getCredits(widget.id ?? 0);
-      context
-          .read<RecommendationMovieCubit>()
-          .getRecommendationMovie(widget.id ?? 0);
-      setState(() {});
     }
   }
 
@@ -113,34 +119,19 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             isWatchlist
                                 ? context
                                     .read<WatchlistCubit>()
-                                    .addToWatchlist(movie: movie.toJson())
+                                    .addToWatchlist(movie.toJson())
                                 : context
                                     .read<WatchlistCubit>()
-                                    .removeFromWatchlist(movie: movie.toJson());
+                                    .removeFromWatchlist(movie.toJson());
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor:
-                                    isWatchlist ? Colors.green : primaryColor,
-                                content: Text(
-                                  isWatchlist
-                                      ? 'Added to Watchlist'
-                                      : 'Removed from Watchlist',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: whiteColor,
-                                    fontWeight: bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                duration: const Duration(milliseconds: 500),
-                              ),
+                            DefaultSnackBar.show(
+                              context,
+                              isWatchlist
+                                  ? 'Added to Watchlist'
+                                  : 'Removed from Watchlist',
+                              backgroundColor:
+                                  isWatchlist ? Colors.green : primaryColor,
                             );
-                          });
-                        },
-                        onLongPress: () {
-                          setState(() {
-                            isWatchlist = !isWatchlist;
-                            context.read<WatchlistCubit>().clearWatchlist();
                           });
                         },
                         child: Container(
@@ -152,10 +143,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            isWatchlist == false
-                                ? Icons.bookmark_outline
-                                : Icons.bookmark_outlined,
-                            semanticLabel: 'Add to Watchlist',
+                            isWatchlist
+                                ? Icons.bookmark_outlined
+                                : Icons.bookmark_outline_outlined,
+                            semanticLabel: isWatchlist
+                                ? 'Add to Watchlist'
+                                : 'Remove from Watchlist',
                           ),
                         ),
                       ),
@@ -270,6 +263,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       certificationWithDot = '';
     }
 
+    String runtime = runtimeFormatter(movie.runtime ?? 0);
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,7 +278,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot${movie.runtime ?? 0} mins',
+            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot$runtime',
             style: GoogleFonts.plusJakartaSans(
               fontSize: footnoteFS,
               fontWeight: semiBold,
@@ -316,6 +311,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             builder: (context, state) {
               if (state is CreditLoaded) {
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Director ',
@@ -323,16 +319,17 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         fontSize: caption1FS,
                       ),
                     ),
-                    Text(
-                      // find all directors
-                      state.credit.crew
-                              ?.where((crew) => crew.job == 'Director')
-                              .map((crew) => crew.name)
-                              .join(', ') ??
-                          '',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: footnoteFS,
-                        fontWeight: semiBold,
+                    Expanded(
+                      child: Text(
+                        state.credit.crew
+                                ?.where((crew) => crew.job == 'Director')
+                                .map((crew) => crew.name)
+                                .join(', ') ??
+                            '',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: footnoteFS,
+                          fontWeight: semiBold,
+                        ),
                       ),
                     ),
                   ],
@@ -362,7 +359,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           const SizedBox(height: 8),
           ReadMoreText(
             movie?.overview ?? '',
-            style: Theme.of(context).textTheme.subtitle2,
+            style: Theme.of(context).textTheme.titleSmall,
             textAlign: TextAlign.justify,
             trimLines: 3,
             trimMode: TrimMode.Line,
@@ -386,6 +383,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget movieRating(MovieDetailModel? movie) {
+    String voteCount = voteCountFormatter(movie?.voteCount ?? 0);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Row(
@@ -397,14 +396,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
           const SizedBox(width: 4),
           Text(
-            movie?.voteAverage?.toStringAsFixed(1) ?? '',
+            movie?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
               fontSize: headlineFS,
               fontWeight: bold,
             ),
           ),
           Text(
-            '/10 • ${movie?.voteCount.toString()}',
+            '/10 • $voteCount',
             style: GoogleFonts.plusJakartaSans(
               color: mutedColor,
               fontSize: caption1FS,

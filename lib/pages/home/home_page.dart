@@ -1,3 +1,5 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,20 +25,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
+  bool dark = false;
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
-      context.read<PopularMovieCubit>().getPopularMovies();
-      context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
-      context.read<UpcomingMovieCubit>().getUpcomingMovies();
+      _getData();
       setState(() {});
     }
   }
 
+  _getData() {
+    context.read<NowPlayingMovieCubit>().getNowPlayingMovies();
+    context.read<PopularMovieCubit>().getPopularMovies();
+    context.read<OnTheAirSeriesCubit>().getOnTheAirSeries();
+    context.read<UpcomingMovieCubit>().getUpcomingMovies();
+  }
+
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Movie Time🍿',
@@ -95,25 +103,26 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       }),
-                      child: Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: secondaryColor,
-                          image: DecorationImage(
-                            image: state.popularMovie.results[index]
-                                        ?.backdropPath !=
-                                    null
-                                ? NetworkImage(
-                                    '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
-                                  )
-                                : const AssetImage('assets/images/img_null.png')
-                                    as ImageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(defaultRadius),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
+                        imageBuilder: (context, imageProvider) => Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(defaultRadius),
+                            ),
                           ),
                         ),
+                        placeholder: (context, url) => Center(
+                          child: CircularProgressIndicator(color: primaryColor),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            Image.asset('assets/images/img_null.png'),
                       ),
                     ),
                   );
@@ -219,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.nowPlayingMovie.results[index]
                                           ?.posterPath !=
@@ -318,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.onTheAirSeries.results[index]
                                           ?.posterPath !=
@@ -412,7 +421,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.popularMovie.results[index]
                                           ?.posterPath !=
@@ -506,7 +515,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image: state.upcomingMovie.results[index]
                                           ?.posterPath !=

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>760631040465-oo7setvbd836gj3p7pbkabmdtg5in8tu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.760631040465-oo7setvbd836gj3p7pbkabmdtg5in8tu</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>760631040465-bt2gnvdteefnqknebka62ljg4l1i4h23.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD3Zdw9mJ-3oCU0BhNZ5-o_wEZZ64Iyzt4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>760631040465</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>id.co.ridhaaf.movieTime</string>
+	<key>PROJECT_ID</key>
+	<string>movie-time-29763</string>
+	<key>STORAGE_BUCKET</key>
+	<string>movie-time-29763.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:760631040465:ios:f32e793dd0decb29f2e8f0</string>
+</dict>
+</plist>
