@@ -149,3 +149,36 @@ Widget sliderMoviePosterShimmer(context) {
     ],
   );
 }
+
+Widget horizontalEpisodesList() {
+  return Expanded(
+    child: ListView.builder(
+      padding: EdgeInsets.only(left: defaultMargin, right: 8),
+      scrollDirection: Axis.horizontal,
+      shrinkWrap: true,
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
+              ? bgColorDark3
+              : Colors.grey.shade300,
+          highlightColor:
+              AdaptiveTheme.of(context).brightness == Brightness.dark
+                  ? greyColor
+                  : Colors.grey.shade100,
+          child: Container(
+            width: 280,
+            height: 128,
+            margin: EdgeInsets.only(right: defaultMargin / 2),
+            decoration: BoxDecoration(
+              color: AdaptiveTheme.of(context).brightness == Brightness.dark
+                  ? darkGreyColor
+                  : white70Color,
+              borderRadius: BorderRadius.circular(defaultRadius),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}

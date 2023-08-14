@@ -10,6 +10,7 @@ import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
 class MovieDetailPage extends StatefulWidget {
@@ -262,6 +263,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       certificationWithDot = '';
     }
 
+    String runtime = runtimeFormatter(movie.runtime ?? 0);
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,7 +278,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot${movie.runtime ?? 0} mins',
+            '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot$runtime',
             style: GoogleFonts.plusJakartaSans(
               fontSize: footnoteFS,
               fontWeight: semiBold,
@@ -380,6 +383,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget movieRating(MovieDetailModel? movie) {
+    String voteCount = voteCountFormatter(movie?.voteCount ?? 0);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Row(
@@ -391,14 +396,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
           const SizedBox(width: 4),
           Text(
-            movie?.voteAverage?.toStringAsFixed(1) ?? '',
+            movie?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
               fontSize: headlineFS,
               fontWeight: bold,
             ),
           ),
           Text(
-            '/10 • ${movie?.voteCount.toString()}',
+            '/10 • $voteCount',
             style: GoogleFonts.plusJakartaSans(
               color: mutedColor,
               fontSize: caption1FS,

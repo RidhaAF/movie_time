@@ -1,14 +1,21 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
-import 'package:movie_time/cubit/credit/credit_cubit.dart';
-import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
+import 'package:movie_time/cubit/aggregate_credit/aggregate_credit_cubit.dart';
+import 'package:movie_time/cubit/recommendation_series/recommendation_series_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
+import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
+import 'package:movie_time/models/aggregate_credit_model.dart';
+import 'package:movie_time/models/recommendation_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
+import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
 class SeriesDetailPage extends StatefulWidget {
@@ -19,16 +26,25 @@ class SeriesDetailPage extends StatefulWidget {
   State<SeriesDetailPage> createState() => _SeriesDetailPageState();
 }
 
-class _SeriesDetailPageState extends State<SeriesDetailPage> {
+class _SeriesDetailPageState extends State<SeriesDetailPage>
+    with TickerProviderStateMixin {
   late SeriesDetailModel series;
   bool isWatchlist = false;
   var top = 0.0;
+  bool dark = false;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _getData();
     _getWatchlist();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
   }
 
   Future<void> _onRefresh() async {
@@ -41,6 +57,13 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
 
   _getData() {
     context.read<SeriesDetailCubit>().getSeriesDetail(widget.id ?? 0);
+    context
+        .read<SeriesSeasonDetailCubit>()
+        .getSeriesSeasonDetail(widget.id ?? 0, 1);
+    context.read<AggregateCreditCubit>().getAggregateCredits(widget.id ?? 0);
+    context
+        .read<RecommendationSeriesCubit>()
+        .getRecommendationSeries(widget.id ?? 0);
   }
 
   _getWatchlist() {
@@ -58,6 +81,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: RefreshIndicator(
         color: primaryColor,
@@ -178,10 +202,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                         ),
                         seriesOverview(series),
                         SizedBox(height: defaultMargin),
+                        seriesSeason(series),
+                        SizedBox(height: defaultMargin),
                         seriesRating(series),
                         SizedBox(height: defaultMargin),
-                        // seriesCast(),
-                        // seriesRecommendation(),
+                        seriesCast(),
+                        seriesRecommendation(),
                         SizedBox(height: defaultMargin),
                       ],
                     ),
@@ -236,6 +262,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   }
 
   Widget seriesInfo(SeriesDetailModel? series) {
+    String totalSeason = totalSeasonsFormattter(series?.numberOfSeasons ?? 0);
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +277,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${series?.firstAirDate?.toString().substring(0, 4)}',
+            '${series?.firstAirDate?.toString().substring(0, 4)} • $totalSeason',
             style: GoogleFonts.plusJakartaSans(
               fontSize: footnoteFS,
               fontWeight: semiBold,
@@ -351,7 +379,204 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
     );
   }
 
+  Widget seriesSeason(SeriesDetailModel? series) {
+    final seasons =
+        series?.seasons?.where((season) => season.seasonNumber != 0);
+    _tabController = TabController(length: seasons?.length ?? 0, vsync: this);
+
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          child: TabBar(
+            tabs: seasons
+                    ?.map(
+                        (season) => Tab(text: 'Season ${season.seasonNumber}'))
+                    .toList() ??
+                [],
+            controller: _tabController,
+            isScrollable: true,
+            indicatorColor: primaryColor,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelColor: dark ? whiteColor : blackColor,
+            labelStyle: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+              fontWeight: bold,
+            ),
+            unselectedLabelColor: mutedColor,
+            unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+              fontSize: title3FS,
+            ),
+            onTap: (value) {
+              context
+                  .read<SeriesSeasonDetailCubit>()
+                  .getSeriesSeasonDetail(series?.id ?? 0, value + 1);
+            },
+          ),
+        ),
+        SizedBox(
+          height: 192,
+          child: TabBarView(
+            controller: _tabController,
+            children: seasons?.map((season) {
+                  String totalEpisode =
+                      totalEpisodesFormatter(season.episodeCount ?? 0);
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: defaultMargin / 2),
+                      BlocBuilder<SeriesSeasonDetailCubit,
+                          SeriesSeasonDetailState>(
+                        builder: (context, state) {
+                          if (state is SeriesSeasonDetailInitial) {
+                            return Container();
+                          } else if (state is SeriesSeasonDetailLoading) {
+                            return horizontalEpisodesList();
+                          } else if (state is SeriesSeasonDetailLoaded) {
+                            final detail = state.seriesSeasonDetail;
+                            final episodes = detail.episodes;
+
+                            return Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                    left: defaultMargin, right: 8),
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: episodes?.length ?? 0,
+                                itemBuilder: (context, i) {
+                                  Episode episode = episodes![i];
+                                  String seasonEpisode = seasonEpisodeFormatter(
+                                      episode.seasonNumber ?? 0,
+                                      episode.episodeNumber ?? 0);
+                                  String runtime =
+                                      runtimeFormatter(episode.runtime ?? 0);
+
+                                  return Container(
+                                    width: 280,
+                                    height: 128,
+                                    margin: EdgeInsets.only(
+                                        right: defaultMargin / 2),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          dark ? darkGreyColor : white70Color,
+                                      borderRadius:
+                                          BorderRadius.circular(defaultRadius),
+                                    ),
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.all(defaultMargin / 2),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '$seasonEpisode • ${dateFormatter(episode.airDate ?? DateTime.now())}',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: subheadlineFS,
+                                              fontWeight: semiBold,
+                                            ),
+                                          ),
+                                          Text(
+                                            episode.name ?? '',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: dark
+                                                  ? secondaryColor
+                                                  : greyColor,
+                                              fontSize: caption1FS,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            episode.overview ?? '',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: mutedColor,
+                                              fontSize: caption1FS,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 5,
+                                          ),
+                                          SizedBox(height: defaultMargin / 2),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.star_rounded,
+                                                color: yellowColor,
+                                                size: 16,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                episode.voteAverage
+                                                        ?.toStringAsFixed(1) ??
+                                                    '0',
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  fontSize: caption1FS,
+                                                  fontWeight: bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                '/10',
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  color: mutedColor,
+                                                  fontSize: caption1FS,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                runtime,
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                  color: dark
+                                                      ? secondaryColor
+                                                      : greyColor,
+                                                  fontSize: caption1FS,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                          return Container();
+                        },
+                      ),
+                      SizedBox(height: defaultMargin / 2),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: defaultMargin),
+                        child: Text(
+                          totalEpisode,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: dark ? secondaryColor : greyColor,
+                            fontSize: caption1FS,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList() ??
+                [],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget seriesRating(SeriesDetailModel? series) {
+    String voteCount = voteCountFormatter(series?.voteCount ?? 0);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Row(
@@ -363,14 +588,14 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
           ),
           const SizedBox(width: 4),
           Text(
-            series?.voteAverage?.toStringAsFixed(1) ?? '',
+            series?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
               fontSize: headlineFS,
               fontWeight: bold,
             ),
           ),
           Text(
-            '/10 • ${series?.voteCount.toString()}',
+            '/10 • $voteCount',
             style: GoogleFonts.plusJakartaSans(
               color: mutedColor,
               fontSize: caption1FS,
@@ -397,14 +622,16 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
         ),
         Container(
           margin: const EdgeInsets.only(top: 8),
-          height: 148,
-          child: BlocBuilder<CreditCubit, CreditState>(
+          height: 152,
+          child: BlocBuilder<AggregateCreditCubit, AggregateCreditState>(
             builder: (context, state) {
-              if (state is CreditLoaded) {
+              if (state is AggregateCreditLoaded) {
+                AggregateCreditModel? aggregateCredit = state.aggregateCredit;
+
                 return ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.credit.cast?.length,
+                  itemCount: aggregateCredit.cast?.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
@@ -420,20 +647,21 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                               color: secondaryColor,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: state.credit.cast?[index].profilePath !=
-                                        null
-                                    ? NetworkImage(
-                                        '${Env.imageBaseURL}w500/${state.credit.cast?[index].profilePath}',
-                                      )
-                                    : const AssetImage(
-                                            'assets/images/img_null.png')
-                                        as ImageProvider,
+                                image:
+                                    aggregateCredit.cast?[index].profilePath !=
+                                            null
+                                        ? NetworkImage(
+                                            '${Env.imageBaseURL}w500/${aggregateCredit.cast?[index].profilePath}',
+                                          )
+                                        : const AssetImage(
+                                                'assets/images/img_null.png')
+                                            as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           Text(
-                            state.credit.cast?[index].name ?? '',
+                            aggregateCredit.cast?[index].name ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                               fontWeight: bold,
@@ -444,7 +672,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            state.credit.cast?[index].character ?? '',
+                            aggregateCredit.cast?[index].roles?[0].character ??
+                                '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                             ),
@@ -467,9 +696,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
   }
 
   Widget seriesRecommendation() {
-    return BlocBuilder<RecommendationMovieCubit, RecommendationMovieState>(
+    return BlocBuilder<RecommendationSeriesCubit, RecommendationSeriesState>(
       builder: (context, state) {
-        if (state is RecommendationMovieLoaded) {
+        if (state is RecommendationSeriesLoaded) {
+          RecommendationSeriesModel recommendationSeries =
+              state.recommendationSeries;
+
           return Container(
             margin: EdgeInsets.only(bottom: defaultMargin),
             child: Column(
@@ -492,7 +724,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                   child: ListView.builder(
                     padding: EdgeInsets.only(left: defaultMargin, right: 8),
                     scrollDirection: Axis.horizontal,
-                    itemCount: state.recommendationMovie.results.length,
+                    itemCount: recommendationSeries.results?.length,
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: (() {
@@ -500,8 +732,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => SeriesDetailPage(
-                                id: state
-                                    .recommendationMovie.results[index]?.id,
+                                id: recommendationSeries.results?[index].id,
                               ),
                             ),
                           );
@@ -512,11 +743,11 @@ class _SeriesDetailPageState extends State<SeriesDetailPage> {
                           decoration: BoxDecoration(
                             color: secondaryColor,
                             image: DecorationImage(
-                              image: state.recommendationMovie.results[index]
-                                          ?.posterPath !=
+                              image: recommendationSeries
+                                          .results?[index].posterPath !=
                                       null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.recommendationMovie.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${recommendationSeries.results?[index].posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')
