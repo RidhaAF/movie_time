@@ -1,6 +1,6 @@
 # Movie Time
 
-Movie Room is a movie recommendation application for users. Movie Room shows the latest, popular & upcoming movies/series.
+Movie Time is a movie recommendation application for users. Movie Room shows the latest, popular & upcoming movies/series.
 
 ## Packages
 
