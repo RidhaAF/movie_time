@@ -32,6 +32,7 @@ dependencies:
   bloc: ^8.1.0
   cached_network_image: ^3.2.3
   carousel_slider: ^4.1.1
+  cloud_firestore: ^4.8.4
   cupertino_icons: ^1.0.2
   dio: ^5.1.2
   equatable: ^2.0.5

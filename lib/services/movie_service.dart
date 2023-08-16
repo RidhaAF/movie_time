@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:movie_time/models/credit_model.dart';
+import 'package:movie_time/models/image_model.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/models/now_playing_movie_model.dart';
 import 'package:movie_time/models/popular_movie_model.dart';
@@ -86,6 +87,18 @@ class MovieService {
     try {
       var response = await Dio().get(url);
       final data = RecommendationMovieModel.fromJson(response.data);
+      return data;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<ImageModel?> getImages(int id) async {
+    String url = '$baseUrl/movie/$id/images?api_key=$apiKey';
+
+    try {
+      var response = await Dio().get(url);
+      final data = ImageModel.fromJson(response.data);
       return data;
     } catch (e) {
       throw Exception(e);
