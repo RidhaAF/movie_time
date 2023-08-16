@@ -41,4 +41,53 @@ class WatchlistService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>> addToWatchlist(WatchlistModel watchlist) async {
+    try {
+      watchlist.userId = user?.uid;
+      await firestore.collection('watchlists').doc(watchlist.id).set({
+        'user_id': watchlist.userId,
+        'watchlist_type': watchlist.watchlistType,
+      });
+
+      return {
+        'success': true,
+        'status': 201,
+        'message': 'Added to Watchlist',
+      };
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error adding to watchlist: $e');
+      }
+      return {
+        'success': false,
+        'status': 500,
+        'message': 'Failed to add to Watchlist',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> removeFromWatchlist(
+      WatchlistModel watchlist) async {
+    try {
+      await firestore.collection('watchlists').doc(watchlist.id).delete();
+
+      return {
+        'success': true,
+        'status': 200,
+        'message': 'Removed from Watchlist',
+      };
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error removing from watchlist: $e');
+      }
+      return {
+        'success': false,
+        'status': 500,
+        'message': 'Failed to remove from Watchlist',
+        'error': e.toString(),
+      };
+    }
+  }
 }

@@ -9,6 +9,7 @@ import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/models/movie_detail_model.dart';
 import 'package:movie_time/models/watchlist_model.dart';
+import 'package:movie_time/services/watchlist_service.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 import 'package:movie_time/utilities/functions.dart';
@@ -59,6 +60,38 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         setState(() {
           isWatchlist = true;
         });
+      }
+    }
+  }
+
+  _watchlistService() async {
+    final Map response;
+    if (isWatchlist) {
+      response = await WatchlistService().addToWatchlist(WatchlistModel(
+        id: movie.id.toString(),
+        watchlistType: 'movie',
+      ));
+    } else {
+      response = await WatchlistService().removeFromWatchlist(WatchlistModel(
+        id: movie.id.toString(),
+        watchlistType: 'movie',
+      ));
+    }
+
+    if (context.mounted) {
+      if (response['success']) {
+        context.read<WatchlistCubit>().getWatchlists();
+        DefaultSnackBar.show(
+          context,
+          isWatchlist ? 'Added to Watchlist' : 'Removed from Watchlist',
+          backgroundColor: isWatchlist ? Colors.green : primaryColor,
+        );
+      } else {
+        DefaultSnackBar.show(
+          context,
+          response['message'],
+          backgroundColor: Colors.red,
+        );
       }
     }
   }
@@ -115,24 +148,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         onTap: () {
                           setState(() {
                             isWatchlist = !isWatchlist;
-
-                            // isWatchlist
-                            //     ? context
-                            //         .read<WatchlistCubit>()
-                            //         .addToWatchlist(movie.toJson())
-                            //     : context
-                            //         .read<WatchlistCubit>()
-                            //         .removeFromWatchlist(movie.toJson());
-
-                            DefaultSnackBar.show(
-                              context,
-                              isWatchlist
-                                  ? 'Added to Watchlist'
-                                  : 'Removed from Watchlist',
-                              backgroundColor:
-                                  isWatchlist ? Colors.green : primaryColor,
-                            );
                           });
+                          _watchlistService();
                         },
                         child: Container(
                           margin: EdgeInsets.only(right: defaultMargin),
