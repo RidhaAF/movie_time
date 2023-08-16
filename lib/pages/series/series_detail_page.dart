@@ -13,6 +13,7 @@ import 'package:movie_time/models/aggregate_credit_model.dart';
 import 'package:movie_time/models/recommendation_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/models/series_season_detail_model.dart';
+import 'package:movie_time/models/watchlist_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 import 'package:movie_time/utilities/functions.dart';
@@ -67,14 +68,13 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   _getWatchlist() {
-    if (context.read<WatchlistCubit>().getWatchlistData() != null) {
-      List watchlist = context.read<WatchlistCubit>().getWatchlistData() ?? [];
-      for (Map item in watchlist) {
-        if (item['id'] == widget.id) {
-          setState(() {
-            isWatchlist = true;
-          });
-        }
+    List<WatchlistModel> watchlists =
+        context.read<WatchlistCubit>().getWatchlistsData();
+    for (WatchlistModel item in watchlists) {
+      if (item.id == widget.id.toString()) {
+        setState(() {
+          isWatchlist = true;
+        });
       }
     }
   }
@@ -130,13 +130,13 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           setState(() {
                             isWatchlist = !isWatchlist;
 
-                            isWatchlist
-                                ? context
-                                    .read<WatchlistCubit>()
-                                    .addToWatchlist(series.toJson())
-                                : context
-                                    .read<WatchlistCubit>()
-                                    .removeFromWatchlist(series.toJson());
+                            // isWatchlist
+                            //     ? context
+                            //         .read<WatchlistCubit>()
+                            //         .addToWatchlist(series.toJson())
+                            //     : context
+                            //         .read<WatchlistCubit>()
+                            //         .removeFromWatchlist(series.toJson());
 
                             DefaultSnackBar.show(
                               context,

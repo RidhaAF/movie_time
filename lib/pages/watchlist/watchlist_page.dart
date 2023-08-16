@@ -1,9 +1,11 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:movie_time/components/default_404.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
+import 'package:movie_time/models/watchlist_model.dart';
 import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
@@ -17,8 +19,8 @@ class WatchlistPage extends StatefulWidget {
 }
 
 class _WatchlistPageState extends State<WatchlistPage> {
-  List watchlist = [];
   GetStorage box = GetStorage();
+  bool dark = false;
 
   @override
   void initState() {
@@ -35,11 +37,12 @@ class _WatchlistPageState extends State<WatchlistPage> {
   }
 
   _getData() {
-    context.read<WatchlistCubit>().getWatchlist();
+    context.read<WatchlistCubit>().getWatchlists();
   }
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Watchlist',
@@ -54,8 +57,9 @@ class _WatchlistPageState extends State<WatchlistPage> {
             } else if (state is WatchlistLoading) {
               return gridMoviePosterShimmer(context);
             } else if (state is WatchlistLoaded) {
-              watchlist = state.watchlist;
-              if (watchlist.isEmpty) {
+              List<WatchlistModel> watchlists = state.watchlists;
+
+              if (watchlists.isEmpty) {
                 return const Default404();
               }
               return GridView.builder(
@@ -66,18 +70,19 @@ class _WatchlistPageState extends State<WatchlistPage> {
                   mainAxisSpacing: 8,
                 ),
                 padding: EdgeInsets.all(defaultMargin),
-                itemCount: watchlist.length,
-                itemBuilder: (context, index) {
+                itemCount: watchlists.length,
+                itemBuilder: (context, i) {
                   return InkWell(
                     customBorder: cardBorderRadius,
                     onTap: (() {
-                      int id = watchlist[index]['id'];
+                      int id = int.parse(watchlists[i].id ?? '0');
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            final isMovie = watchlist[index]['title'] != null;
+                            final isMovie =
+                                watchlists[i].watchlistType == 'movie';
                             return isMovie
                                 ? MovieDetailPage(id: id)
                                 : SeriesDetailPage(id: id);
@@ -85,18 +90,18 @@ class _WatchlistPageState extends State<WatchlistPage> {
                         ),
                       ).then((value) {
                         setState(() {
-                          context.read<WatchlistCubit>().getWatchlistData();
+                          context.read<WatchlistCubit>().getWatchlistsData();
                         });
                       });
                     }),
                     child: Container(
                       width: 102,
                       decoration: BoxDecoration(
-                        color: secondaryColor,
+                        color: dark ? greyColor : secondaryColor,
                         image: DecorationImage(
-                          image: watchlist[index]?['poster_path'] != null
+                          image: watchlists[i].posterPath != null
                               ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${watchlist[index]?['poster_path']}',
+                                  '${Env.imageBaseURL}w500/${watchlists[i].posterPath}',
                                 )
                               : const AssetImage('assets/images/img_null.png')
                                   as ImageProvider,

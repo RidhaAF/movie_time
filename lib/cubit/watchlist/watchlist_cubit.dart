@@ -1,49 +1,53 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:movie_time/models/watchlist_model.dart';
+import 'package:movie_time/services/watchlist_service.dart';
 
 part 'watchlist_state.dart';
 
 class WatchlistCubit extends Cubit<WatchlistState> {
-  GetStorage box = GetStorage();
-  List watchlist = [];
-  WatchlistCubit() : super(WatchlistInitial()) {
-    getWatchlist();
-  }
+  List<WatchlistModel> watchlists = [];
+  WatchlistCubit() : super(WatchlistInitial());
 
-  void getWatchlist() {
+  void getWatchlists() async {
     try {
       emit(WatchlistLoading());
-      watchlist = box.read('watchlist') ?? [];
-      if (watchlist.isNotEmpty) {
-        emit(WatchlistLoaded(watchlist));
+      var response = await WatchlistService().getWatchlists();
+
+      if (response != null) {
+        watchlists = response;
+        emit(WatchlistLoaded(watchlists));
       } else {
         emit(WatchlistError());
       }
-    } on Exception {
+    } on WatchlistError {
       emit(WatchlistError());
     }
   }
 
-  void addToWatchlist(Map<String, dynamic> item) {
-    watchlist.add(item);
-    box.write('watchlist', watchlist);
-    emit(WatchlistLoaded(watchlist));
+  List<WatchlistModel> getWatchlistsData() {
+    return watchlists;
   }
 
-  void removeFromWatchlist(Map<String, dynamic> item) {
-    watchlist.removeWhere((e) => e['id'] == item['id']);
-    box.write('watchlist', watchlist);
-    emit(WatchlistLoaded(watchlist));
-  }
+  // void addToWatchlist(Map<String, dynamic> item) {
+  //   watchlist.add(item);
+  //   box.write('watchlist', watchlist);
+  //   emit(WatchlistLoaded(watchlist));
+  // }
 
-  getWatchlistData() {
-    return watchlist;
-  }
+  // void removeFromWatchlist(Map<String, dynamic> item) {
+  //   watchlist.removeWhere((e) => e['id'] == item['id']);
+  //   box.write('watchlist', watchlist);
+  //   emit(WatchlistLoaded(watchlist));
+  // }
 
-  void clearWatchlist() {
-    watchlist.clear();
-    box.write('watchlist', null);
-    emit(WatchlistLoaded(watchlist));
-  }
+  // getWatchlistData() {
+  //   return watchlist;
+  // }
+
+  // void clearWatchlist() {
+  //   watchlist.clear();
+  //   box.write('watchlist', null);
+  //   emit(WatchlistLoaded(watchlist));
+  // }
 }
