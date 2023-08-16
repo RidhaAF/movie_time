@@ -13,6 +13,8 @@ import 'package:movie_time/models/aggregate_credit_model.dart';
 import 'package:movie_time/models/recommendation_series_model.dart';
 import 'package:movie_time/models/series_detail_model.dart';
 import 'package:movie_time/models/series_season_detail_model.dart';
+import 'package:movie_time/models/watchlist_model.dart';
+import 'package:movie_time/services/watchlist_service.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
 import 'package:movie_time/utilities/functions.dart';
@@ -67,14 +69,45 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   _getWatchlist() {
-    if (context.read<WatchlistCubit>().getWatchlistData() != null) {
-      List watchlist = context.read<WatchlistCubit>().getWatchlistData() ?? [];
-      for (Map item in watchlist) {
-        if (item['id'] == widget.id) {
-          setState(() {
-            isWatchlist = true;
-          });
-        }
+    List<WatchlistModel> watchlists =
+        context.read<WatchlistCubit>().getWatchlistsData();
+    for (WatchlistModel item in watchlists) {
+      if (item.id == widget.id.toString()) {
+        setState(() {
+          isWatchlist = true;
+        });
+      }
+    }
+  }
+
+  _watchlistService() async {
+    final Map response;
+    if (isWatchlist) {
+      response = await WatchlistService().addToWatchlist(WatchlistModel(
+        id: series.id.toString(),
+        watchlistType: 'series',
+      ));
+    } else {
+      response = await WatchlistService().removeFromWatchlist(WatchlistModel(
+        id: series.id.toString(),
+        watchlistType: 'series',
+      ));
+    }
+
+    if (context.mounted) {
+      if (response['success']) {
+        context.read<WatchlistCubit>().getWatchlists();
+        DefaultSnackBar.show(
+          context,
+          isWatchlist ? 'Added to Watchlist' : 'Removed from Watchlist',
+          backgroundColor: isWatchlist ? Colors.green : primaryColor,
+        );
+      } else {
+        DefaultSnackBar.show(
+          context,
+          response['message'],
+          backgroundColor: Colors.red,
+        );
       }
     }
   }
@@ -129,24 +162,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                         onTap: () {
                           setState(() {
                             isWatchlist = !isWatchlist;
-
-                            isWatchlist
-                                ? context
-                                    .read<WatchlistCubit>()
-                                    .addToWatchlist(series.toJson())
-                                : context
-                                    .read<WatchlistCubit>()
-                                    .removeFromWatchlist(series.toJson());
-
-                            DefaultSnackBar.show(
-                              context,
-                              isWatchlist
-                                  ? 'Added to Watchlist'
-                                  : 'Removed from Watchlist',
-                              backgroundColor:
-                                  isWatchlist ? Colors.green : primaryColor,
-                            );
                           });
+                          _watchlistService();
                         },
                         child: Container(
                           margin: EdgeInsets.only(right: defaultMargin),

@@ -12,12 +12,12 @@ class WatchlistInitial extends WatchlistState {}
 class WatchlistLoading extends WatchlistState {}
 
 class WatchlistLoaded extends WatchlistState {
-  final List watchlist;
+  final List<WatchlistModel> watchlists;
 
-  const WatchlistLoaded(this.watchlist);
+  const WatchlistLoaded(this.watchlists);
 
   @override
-  List<Object> get props => [watchlist];
+  List<Object> get props => [watchlists];
 }
 
 class WatchlistError extends WatchlistState {}
