@@ -122,8 +122,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(color: primaryColor),
+                        placeholder: (context, url) => Container(
+                          color: dark ? bgColorDark3 : Colors.grey.shade300,
                         ),
                         errorWidget: (context, url, error) =>
                             Image.asset('assets/images/img_null.png'),

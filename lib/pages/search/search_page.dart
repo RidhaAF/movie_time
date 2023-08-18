@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_time/components/default_404.dart';
@@ -19,6 +20,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
+  bool dark = false;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Search',
@@ -110,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
                               image:
                                   searchResults[index]?['poster_path'] != null

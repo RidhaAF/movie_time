@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
@@ -21,12 +22,6 @@ class WatchlistPage extends StatefulWidget {
 class _WatchlistPageState extends State<WatchlistPage> {
   GetStorage box = GetStorage();
   bool dark = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -94,23 +89,27 @@ class _WatchlistPageState extends State<WatchlistPage> {
                         });
                       });
                     }),
-                    child: Container(
-                      width: 102,
-                      decoration: BoxDecoration(
-                        color: dark ? bgColorDark3 : Colors.grey.shade300,
-                        image: DecorationImage(
-                          image: watchlists[i].posterPath != null
-                              ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${watchlists[i].posterPath}',
-                                )
-                              : const AssetImage('assets/images/img_null.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(defaultRadius),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          '${Env.imageBaseURL}w500/${watchlists[i].posterPath}',
+                      imageBuilder: (context, imageProvider) => Container(
+                        height: 102,
+                        decoration: BoxDecoration(
+                          color: dark ? bgColorDark3 : Colors.grey.shade300,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(defaultRadius),
+                          ),
                         ),
                       ),
+                      placeholder: (context, url) => Container(
+                        color: dark ? bgColorDark3 : Colors.grey.shade300,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          Image.asset('assets/images/img_null.png'),
                     ),
                   );
                 },
