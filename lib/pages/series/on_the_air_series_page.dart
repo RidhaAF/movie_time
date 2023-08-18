@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
-import 'package:movie_time/pages/series/series_detail_page.dart';
+import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class OnTheAirSeriesPage extends StatefulWidget {
   const OnTheAirSeriesPage({super.key});
@@ -37,6 +39,8 @@ class _OnTheAirSeriesPageState extends State<OnTheAirSeriesPage> {
             } else if (state is OnTheAirSeriesLoading) {
               return loadingIndicator();
             } else if (state is OnTheAirSeriesLoaded) {
+              List<Result?> onTheAirSeries = state.onTheAirSeries.results;
+
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -45,30 +49,23 @@ class _OnTheAirSeriesPageState extends State<OnTheAirSeriesPage> {
                   mainAxisSpacing: 8,
                 ),
                 padding: EdgeInsets.all(defaultMargin),
-                itemCount: state.onTheAirSeries.results.length,
+                itemCount: onTheAirSeries.length,
                 itemBuilder: (context, index) {
+                  Result? series = onTheAirSeries[index];
+                  int? id = series?.id ?? 0;
+
                   return InkWell(
                     onTap: (() {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SeriesDetailPage(
-                            id: state.onTheAirSeries.results[index]?.id,
-                          ),
-                        ),
-                      );
+                      context.push('/series/detail/$id');
                     }),
                     child: Container(
-                      // margin: const EdgeInsets.only(right: 8),
                       width: 102,
                       decoration: BoxDecoration(
-                        color: secondaryColor,
+                        color: getContainerColor(context),
                         image: DecorationImage(
-                          image: state.onTheAirSeries.results[index]
-                                      ?.posterPath !=
-                                  null
+                          image: series?.posterPath != null
                               ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
+                                  '${Env.imageBaseURL}w500/${series?.posterPath}',
                                 )
                               : const AssetImage('assets/images/img_null.png')
                                   as ImageProvider,

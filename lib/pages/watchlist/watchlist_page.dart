@@ -1,4 +1,3 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +10,7 @@ import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class WatchlistPage extends StatefulWidget {
   const WatchlistPage({Key? key}) : super(key: key);
@@ -21,7 +21,6 @@ class WatchlistPage extends StatefulWidget {
 
 class _WatchlistPageState extends State<WatchlistPage> {
   GetStorage box = GetStorage();
-  bool dark = false;
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -37,7 +36,6 @@ class _WatchlistPageState extends State<WatchlistPage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Watchlist',
@@ -95,7 +93,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                       imageBuilder: (context, imageProvider) => Container(
                         height: 102,
                         decoration: BoxDecoration(
-                          color: dark ? bgColorDark3 : Colors.grey.shade300,
+                          color: getContainerColor(context),
                           image: DecorationImage(
                             image: imageProvider,
                             fit: BoxFit.cover,
@@ -106,7 +104,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                         ),
                       ),
                       placeholder: (context, url) => Container(
-                        color: dark ? bgColorDark3 : Colors.grey.shade300,
+                        color: getContainerColor(context),
                       ),
                       errorWidget: (context, url, error) =>
                           Image.asset('assets/images/img_null.png'),

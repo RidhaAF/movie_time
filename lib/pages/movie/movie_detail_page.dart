@@ -1,4 +1,3 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +31,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   String title = '';
   bool isWatchlist = false;
   var top = 0.0;
-  bool dark = false;
 
   @override
   void initState() {
@@ -103,7 +101,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: RefreshIndicator(
         color: primaryColor,
@@ -237,7 +234,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: dark ? bgColorDark3 : Colors.grey.shade300,
+        color: getContainerColor(context),
         image: DecorationImage(
           colorFilter:
               ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
@@ -257,7 +254,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       height: 154,
       width: 102,
       decoration: BoxDecoration(
-        color: dark ? bgColorDark3 : Colors.grey.shade300,
+        color: getContainerColor(context),
         borderRadius: BorderRadius.circular(defaultRadius),
         image: DecorationImage(
           image: movie?.posterPath != null
@@ -490,7 +487,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                             height: 80,
                             width: 80,
                             decoration: BoxDecoration(
-                              color: dark ? bgColorDark3 : Colors.grey.shade300,
+                              color: getContainerColor(context),
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 image: cast?.profilePath != null
@@ -591,7 +588,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                           child: Container(
                             width: 102,
                             decoration: BoxDecoration(
-                              color: dark ? bgColorDark3 : Colors.grey.shade300,
+                              color: getContainerColor(context),
                               image: DecorationImage(
                                 image: recommendedMovie?.posterPath != null
                                     ? NetworkImage(

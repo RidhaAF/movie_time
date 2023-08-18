@@ -246,7 +246,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: dark ? bgColorDark3 : Colors.grey.shade300,
+        color: getContainerColor(context),
         image: DecorationImage(
           colorFilter:
               ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
@@ -266,7 +266,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
       height: 154,
       width: 102,
       decoration: BoxDecoration(
-        color: dark ? bgColorDark3 : Colors.grey.shade300,
+        color: getContainerColor(context),
         borderRadius: BorderRadius.circular(defaultRadius),
         image: DecorationImage(
           image: series?.posterPath != null
@@ -640,7 +640,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                             height: 80,
                             width: 80,
                             decoration: BoxDecoration(
-                              color: dark ? bgColorDark3 : Colors.grey.shade300,
+                              color: getContainerColor(context),
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 image: cast?.profilePath != null
@@ -736,7 +736,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           margin: const EdgeInsets.only(right: 8),
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image: series?.posterPath != null
                                   ? NetworkImage(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
-import 'package:movie_time/pages/movie/movie_detail_page.dart';
+import 'package:movie_time/models/now_playing_movie_model.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class NowPlayingMoviesPages extends StatefulWidget {
   const NowPlayingMoviesPages({super.key});
@@ -38,6 +40,8 @@ class _NowPlayingMoviesPagesState extends State<NowPlayingMoviesPages> {
             } else if (state is NowPlayingMovieLoading) {
               return gridMoviePosterShimmer(context);
             } else if (state is NowPlayingMovieLoaded) {
+              List<Result?> nowPlayingMovies = state.nowPlayingMovie.results;
+
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
@@ -46,30 +50,24 @@ class _NowPlayingMoviesPagesState extends State<NowPlayingMoviesPages> {
                   mainAxisSpacing: 8,
                 ),
                 padding: EdgeInsets.all(defaultMargin),
-                itemCount: state.nowPlayingMovie.results.length,
+                itemCount: nowPlayingMovies.length,
                 itemBuilder: (context, index) {
+                  Result? movie = nowPlayingMovies[index];
+                  int? id = movie?.id ?? 0;
+
                   return InkWell(
                     customBorder: cardBorderRadius,
                     onTap: (() {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MovieDetailPage(
-                            id: state.nowPlayingMovie.results[index]?.id,
-                          ),
-                        ),
-                      );
+                      context.push('/movie/detail/$id');
                     }),
                     child: Container(
                       width: 102,
                       decoration: BoxDecoration(
-                        color: secondaryColor,
+                        color: getContainerColor(context),
                         image: DecorationImage(
-                          image: state.nowPlayingMovie.results[index]
-                                      ?.posterPath !=
-                                  null
+                          image: movie?.posterPath != null
                               ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${state.nowPlayingMovie.results[index]?.posterPath}',
+                                  '${Env.imageBaseURL}w500/${movie?.posterPath}',
                                 )
                               : const AssetImage('assets/images/img_null.png')
                                   as ImageProvider,

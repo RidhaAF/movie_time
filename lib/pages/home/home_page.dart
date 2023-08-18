@@ -1,4 +1,3 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:movie_time/models/popular_movie_model.dart' as pmm;
 import 'package:movie_time/models/upcoming_movie_model.dart' as umm;
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -27,7 +27,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
-  bool dark = false;
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -50,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Movie Time🍿',
@@ -123,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         placeholder: (context, url) => Container(
-                          color: dark ? bgColorDark3 : Colors.grey.shade300,
+                          color: getContainerColor(context),
                         ),
                         errorWidget: (context, url, error) =>
                             Image.asset('assets/images/img_null.png'),
@@ -230,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image: movie?.posterPath != null
                                   ? NetworkImage(
@@ -320,7 +318,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image: series?.posterPath != null
                                   ? NetworkImage(
@@ -410,7 +408,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image: movie?.posterPath != null
                                   ? NetworkImage(
@@ -500,7 +498,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image: movie?.posterPath != null
                                   ? NetworkImage(
