@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
@@ -127,6 +128,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
               return loadingIndicator();
             } else if (state is SeriesDetailLoaded) {
               series = state.seriesDetail;
+
               return CustomScrollView(
                 slivers: [
                   SliverAppBar(
@@ -138,7 +140,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                     automaticallyImplyLeading: false,
                     leading: GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        context.pop();
                       },
                       child: Container(
                         margin: EdgeInsets.only(left: defaultMargin),
@@ -244,7 +246,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: secondaryColor,
+        color: dark ? bgColorDark3 : Colors.grey.shade300,
         image: DecorationImage(
           colorFilter:
               ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
@@ -264,7 +266,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
       height: 154,
       width: 102,
       decoration: BoxDecoration(
-        color: secondaryColor,
+        color: dark ? bgColorDark3 : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(defaultRadius),
         image: DecorationImage(
           image: series?.posterPath != null
@@ -280,6 +282,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
 
   Widget seriesInfo(SeriesDetailModel? series) {
     String totalSeason = totalSeasonsFormattter(series?.numberOfSeasons ?? 0);
+    String genre = series?.genres?.map((genre) => genre.name).join(', ') ?? '';
 
     return Expanded(
       child: Column(
@@ -312,46 +315,15 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
               ),
               Expanded(
                 child: Text(
-                  series?.genres?.map((genre) => genre.name).join(', ') ?? '',
+                  genre,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: footnoteFS,
                     fontWeight: semiBold,
                   ),
-                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          // const SizedBox(height: 8),
-          // BlocBuilder<CreditCubit, CreditState>(
-          //   builder: (context, state) {
-          //     if (state is CreditLoaded) {
-          //       return Row(
-          //         children: [
-          //           Text(
-          //             'Director ',
-          //             style: GoogleFonts.plusJakartaSans(
-          //               fontSize: caption1FS,
-          //             ),
-          //           ),
-          //           Text(
-          //             // find all directors
-          //             state.credit.crew
-          //                     ?.where((crew) => crew.job == 'Director')
-          //                     .map((crew) => crew.name)
-          //                     .join(', ') ??
-          //                 '',
-          //             style: GoogleFonts.plusJakartaSans(
-          //               fontSize: footnoteFS,
-          //               fontWeight: semiBold,
-          //             ),
-          //           ),
-          //         ],
-          //       );
-          //     }
-          //     return Container();
-          //   },
-          // ),
         ],
       ),
     );
@@ -491,7 +463,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '$seasonEpisode • ${dateFormatter(episode.airDate ?? DateTime.now())}',
+                                            '$seasonEpisode • ${dateFormatter(episode.airDate ?? DateTime.parse('1970-01-01'))}',
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: subheadlineFS,
                                               fontWeight: semiBold,
@@ -513,6 +485,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                               color: mutedColor,
                                               fontSize: caption1FS,
                                             ),
+                                            textAlign: TextAlign.justify,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 5,
                                           ),
@@ -642,14 +615,20 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
           height: 152,
           child: BlocBuilder<AggregateCreditCubit, AggregateCreditState>(
             builder: (context, state) {
-              if (state is AggregateCreditLoaded) {
-                AggregateCreditModel? aggregateCredit = state.aggregateCredit;
+              if (state is AggregateCreditInitial) {
+                return Container();
+              } else if (state is AggregateCreditLoading) {
+                return loadingIndicator();
+              } else if (state is AggregateCreditLoaded) {
+                List<Cast>? casts = state.aggregateCredit.cast;
 
                 return ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
-                  itemCount: aggregateCredit.cast?.length,
+                  itemCount: casts?.length,
                   itemBuilder: (context, index) {
+                    Cast? cast = casts?[index];
+
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
                       width: 80,
@@ -661,24 +640,22 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                             height: 80,
                             width: 80,
                             decoration: BoxDecoration(
-                              color: secondaryColor,
+                              color: dark ? bgColorDark3 : Colors.grey.shade300,
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image:
-                                    aggregateCredit.cast?[index].profilePath !=
-                                            null
-                                        ? NetworkImage(
-                                            '${Env.imageBaseURL}w500/${aggregateCredit.cast?[index].profilePath}',
-                                          )
-                                        : const AssetImage(
-                                                'assets/images/img_null.png')
-                                            as ImageProvider,
+                                image: cast?.profilePath != null
+                                    ? NetworkImage(
+                                        '${Env.imageBaseURL}w500/${cast?.profilePath}',
+                                      )
+                                    : const AssetImage(
+                                            'assets/images/img_null.png')
+                                        as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           Text(
-                            aggregateCredit.cast?[index].name ?? '',
+                            cast?.name ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                               fontWeight: bold,
@@ -689,8 +666,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            aggregateCredit.cast?[index].roles?[0].character ??
-                                '',
+                            cast?.roles?[0].character ?? '',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: caption1FS,
                             ),
@@ -715,9 +691,13 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   Widget seriesRecommendation() {
     return BlocBuilder<RecommendationSeriesCubit, RecommendationSeriesState>(
       builder: (context, state) {
-        if (state is RecommendationSeriesLoaded) {
-          RecommendationSeriesModel recommendationSeries =
-              state.recommendationSeries;
+        if (state is RecommendationSeriesInitial) {
+          return Container();
+        } else if (state is RecommendationSeriesLoading) {
+          return loadingIndicator();
+        } else if (state is RecommendationSeriesLoaded) {
+          List<Result>? recommendationSeries =
+              state.recommendationSeries.results;
 
           return Container(
             margin: EdgeInsets.only(bottom: defaultMargin),
@@ -741,30 +721,26 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                   child: ListView.builder(
                     padding: EdgeInsets.only(left: defaultMargin, right: 8),
                     scrollDirection: Axis.horizontal,
-                    itemCount: recommendationSeries.results?.length,
+                    itemCount: recommendationSeries?.length,
                     itemBuilder: (context, index) {
+                      Result? series = recommendationSeries?[index];
+                      int? id = series?.id ?? 0;
+
                       return InkWell(
                         onTap: (() {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SeriesDetailPage(
-                                id: recommendationSeries.results?[index].id,
-                              ),
-                            ),
-                          );
+                          context
+                              .push('/series/detail/$id')
+                              .then((value) => _getData());
                         }),
                         child: Container(
                           margin: const EdgeInsets.only(right: 8),
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: dark ? bgColorDark3 : Colors.grey.shade300,
                             image: DecorationImage(
-                              image: recommendationSeries
-                                          .results?[index].posterPath !=
-                                      null
+                              image: series?.posterPath != null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${recommendationSeries.results?[index].posterPath}',
+                                      '${Env.imageBaseURL}w500/${series?.posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')

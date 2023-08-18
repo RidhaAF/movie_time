@@ -97,7 +97,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                     child: Container(
                       width: 102,
                       decoration: BoxDecoration(
-                        color: dark ? greyColor : secondaryColor,
+                        color: dark ? bgColorDark3 : Colors.grey.shade300,
                         image: DecorationImage(
                           image: watchlists[i].posterPath != null
                               ? NetworkImage(
