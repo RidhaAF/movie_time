@@ -1,5 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/services/user_service.dart';
@@ -22,7 +23,7 @@ class _SignInPageState extends State<SignInPage> {
 
     if (context.mounted) {
       if (response != null) {
-        Navigator.pushReplacementNamed(context, '/home');
+        context.pushReplacement('/');
         DefaultSnackBar.show(
           context,
           'Signed in successfully!',
