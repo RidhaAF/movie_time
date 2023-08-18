@@ -3,6 +3,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/services/user_service.dart';
@@ -38,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
     await UserService().signOut();
 
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/sign-in');
+      context.pushReplacement('/sign-in');
       DefaultSnackBar.show(
         context,
         'Signed out successfully!',

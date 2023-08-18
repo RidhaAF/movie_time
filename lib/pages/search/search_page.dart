@@ -8,6 +8,7 @@ import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -110,7 +111,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: secondaryColor,
+                            color: getContainerColor(context),
                             image: DecorationImage(
                               image:
                                   searchResults[index]?['poster_path'] != null

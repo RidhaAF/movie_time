@@ -1,4 +1,4 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,6 +10,7 @@ import 'package:movie_time/pages/movie/movie_detail_page.dart';
 import 'package:movie_time/pages/series/series_detail_page.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class WatchlistPage extends StatefulWidget {
   const WatchlistPage({Key? key}) : super(key: key);
@@ -20,13 +21,6 @@ class WatchlistPage extends StatefulWidget {
 
 class _WatchlistPageState extends State<WatchlistPage> {
   GetStorage box = GetStorage();
-  bool dark = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _getData();
-  }
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -42,7 +36,6 @@ class _WatchlistPageState extends State<WatchlistPage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Watchlist',
@@ -94,23 +87,27 @@ class _WatchlistPageState extends State<WatchlistPage> {
                         });
                       });
                     }),
-                    child: Container(
-                      width: 102,
-                      decoration: BoxDecoration(
-                        color: dark ? greyColor : secondaryColor,
-                        image: DecorationImage(
-                          image: watchlists[i].posterPath != null
-                              ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${watchlists[i].posterPath}',
-                                )
-                              : const AssetImage('assets/images/img_null.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(defaultRadius),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          '${Env.imageBaseURL}w500/${watchlists[i].posterPath}',
+                      imageBuilder: (context, imageProvider) => Container(
+                        height: 102,
+                        decoration: BoxDecoration(
+                          color: getContainerColor(context),
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(defaultRadius),
+                          ),
                         ),
                       ),
+                      placeholder: (context, url) => Container(
+                        color: getContainerColor(context),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          Image.asset('assets/images/img_null.png'),
                     ),
                   );
                 },

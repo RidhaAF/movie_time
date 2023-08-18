@@ -7,7 +7,9 @@ part 'watchlist_state.dart';
 
 class WatchlistCubit extends Cubit<WatchlistState> {
   List<WatchlistModel> watchlists = [];
-  WatchlistCubit() : super(WatchlistInitial());
+  WatchlistCubit() : super(WatchlistInitial()) {
+    getWatchlists();
+  }
 
   void getWatchlists() async {
     try {
@@ -28,26 +30,4 @@ class WatchlistCubit extends Cubit<WatchlistState> {
   List<WatchlistModel> getWatchlistsData() {
     return watchlists;
   }
-
-  // void addToWatchlist(Map<String, dynamic> item) {
-  //   watchlist.add(item);
-  //   box.write('watchlist', watchlist);
-  //   emit(WatchlistLoaded(watchlist));
-  // }
-
-  // void removeFromWatchlist(Map<String, dynamic> item) {
-  //   watchlist.removeWhere((e) => e['id'] == item['id']);
-  //   box.write('watchlist', watchlist);
-  //   emit(WatchlistLoaded(watchlist));
-  // }
-
-  // getWatchlistData() {
-  //   return watchlist;
-  // }
-
-  // void clearWatchlist() {
-  //   watchlist.clear();
-  //   box.write('watchlist', null);
-  //   emit(WatchlistLoaded(watchlist));
-  // }
 }

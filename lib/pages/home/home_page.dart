@@ -1,19 +1,21 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
-import 'package:movie_time/pages/movie/movie_detail_page.dart';
-import 'package:movie_time/pages/series/on_the_air_series_page.dart';
-import 'package:movie_time/pages/series/series_detail_page.dart';
+import 'package:movie_time/models/now_playing_movie_model.dart' as npm;
+import 'package:movie_time/models/on_the_air_series_model.dart' as otasm;
+import 'package:movie_time/models/popular_movie_model.dart' as pmm;
+import 'package:movie_time/models/upcoming_movie_model.dart' as umm;
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/env.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,7 +27,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
-  bool dark = false;
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -42,9 +43,12 @@ class _HomePageState extends State<HomePage> {
     context.read<UpcomingMovieCubit>().getUpcomingMovies();
   }
 
+  _goToMovieDetail(int id) {
+    context.push('/movie/detail/$id');
+  }
+
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBar(
         title: 'Movie Time🍿',
@@ -84,28 +88,26 @@ class _HomePageState extends State<HomePage> {
         } else if (state is PopularMovieLoading) {
           return sliderMoviePosterShimmer(context);
         } else if (state is PopularMovieLoaded) {
+          List<pmm.Result?> popularMovies = state.popularMovie.results;
+
           return Column(
             children: [
               CarouselSlider.builder(
                 itemCount: 5,
                 itemBuilder: (context, index, realIndex) {
+                  pmm.Result? movie = popularMovies[index];
+                  int? id = movie?.id ?? 0;
+
                   return Container(
                     margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
                     child: InkWell(
                       customBorder: cardBorderRadius,
                       onTap: (() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MovieDetailPage(
-                              id: state.popularMovie.results[index]?.id,
-                            ),
-                          ),
-                        );
+                        _goToMovieDetail(id);
                       }),
                       child: CachedNetworkImage(
                         imageUrl:
-                            '${Env.imageBaseURL}original/${state.popularMovie.results[index]?.backdropPath}',
+                            '${Env.imageBaseURL}original/${movie?.backdropPath}',
                         imageBuilder: (context, imageProvider) => Container(
                           height: 200,
                           decoration: BoxDecoration(
@@ -118,8 +120,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(color: primaryColor),
+                        placeholder: (context, url) => Container(
+                          color: getContainerColor(context),
                         ),
                         errorWidget: (context, url, error) =>
                             Image.asset('assets/images/img_null.png'),
@@ -174,6 +176,8 @@ class _HomePageState extends State<HomePage> {
         } else if (state is NowPlayingMovieLoading) {
           return moviePosterShimmer(context);
         } else if (state is NowPlayingMovieLoaded) {
+          List<npm.Result?> nowPlayingMovies = state.nowPlayingMovie.results;
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -182,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                     defaultMargin, defaultMargin, defaultMargin, 8),
                 child: InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, '/movie/now-playing');
+                    context.push('/movie/now-playing');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,30 +215,24 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
+                    npm.Result? movie = nowPlayingMovies[index];
+                    int? id = movie?.id ?? 0;
+
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailPage(
-                                id: state.nowPlayingMovie.results[index]?.id,
-                              ),
-                            ),
-                          );
+                          _goToMovieDetail(id);
                         }),
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
-                              image: state.nowPlayingMovie.results[index]
-                                          ?.posterPath !=
-                                      null
+                              image: movie?.posterPath != null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.nowPlayingMovie.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')
@@ -268,6 +266,8 @@ class _HomePageState extends State<HomePage> {
         } else if (state is OnTheAirSeriesLoading) {
           return moviePosterShimmer(context);
         } else if (state is OnTheAirSeriesLoaded) {
+          List<otasm.Result?> onTheAirSeries = state.onTheAirSeries.results;
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -276,12 +276,7 @@ class _HomePageState extends State<HomePage> {
                     defaultMargin, defaultMargin, defaultMargin, 8),
                 child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OnTheAirSeriesPage(),
-                      ),
-                    );
+                    context.push('/series/on-the-air');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -310,30 +305,24 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
+                    otasm.Result? series = onTheAirSeries[index];
+                    int? id = series?.id ?? 0;
+
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SeriesDetailPage(
-                                id: state.onTheAirSeries.results[index]?.id,
-                              ),
-                            ),
-                          );
+                          context.push('/series/detail/$id');
                         }),
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
-                              image: state.onTheAirSeries.results[index]
-                                          ?.posterPath !=
-                                      null
+                              image: series?.posterPath != null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.onTheAirSeries.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${series?.posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')
@@ -367,6 +356,8 @@ class _HomePageState extends State<HomePage> {
         } else if (state is PopularMovieLoading) {
           return moviePosterShimmer(context);
         } else if (state is PopularMovieLoaded) {
+          List<pmm.Result?> popularMovies = state.popularMovie.results;
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -375,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                     defaultMargin, defaultMargin, defaultMargin, 8),
                 child: InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, '/movie/popular');
+                    context.push('/movie/popular');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -404,30 +395,24 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
+                    pmm.Result? movie = popularMovies[index];
+                    int? id = movie?.id ?? 0;
+
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailPage(
-                                id: state.popularMovie.results[index]?.id,
-                              ),
-                            ),
-                          );
+                          _goToMovieDetail(id);
                         }),
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
-                              image: state.popularMovie.results[index]
-                                          ?.posterPath !=
-                                      null
+                              image: movie?.posterPath != null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.popularMovie.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')
@@ -461,6 +446,8 @@ class _HomePageState extends State<HomePage> {
         } else if (state is UpcomingMovieLoading) {
           return moviePosterShimmer(context);
         } else if (state is UpcomingMovieLoaded) {
+          List<umm.Result?> upcomingMovies = state.upcomingMovie.results;
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -469,7 +456,7 @@ class _HomePageState extends State<HomePage> {
                     defaultMargin, defaultMargin, defaultMargin, 8),
                 child: InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, '/movie/upcoming');
+                    context.push('/movie/upcoming');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -496,32 +483,26 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
                   padding: EdgeInsets.only(left: defaultMargin, right: 8),
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.upcomingMovie.results.length,
+                  itemCount: upcomingMovies.length,
                   itemBuilder: (context, index) {
+                    umm.Result? movie = upcomingMovies[index];
+                    int? id = movie?.id ?? 0;
+
                     return Container(
                       margin: const EdgeInsets.only(right: 8),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailPage(
-                                id: state.upcomingMovie.results[index]?.id,
-                              ),
-                            ),
-                          );
+                          _goToMovieDetail(id);
                         }),
                         child: Container(
                           width: 102,
                           decoration: BoxDecoration(
-                            color: dark ? bgColorDark3 : Colors.grey.shade300,
+                            color: getContainerColor(context),
                             image: DecorationImage(
-                              image: state.upcomingMovie.results[index]
-                                          ?.posterPath !=
-                                      null
+                              image: movie?.posterPath != null
                                   ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${state.upcomingMovie.results[index]?.posterPath}',
+                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
                                     )
                                   : const AssetImage(
                                           'assets/images/img_null.png')

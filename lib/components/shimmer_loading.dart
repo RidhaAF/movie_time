@@ -11,26 +11,52 @@ Widget moviePosterShimmer(context) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Container(
-        margin: EdgeInsets.fromLTRB(
-            defaultMargin, defaultMargin, defaultMargin, 12),
-        child: Shimmer.fromColors(
-          baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-              ? bgColorDark3
-              : Colors.grey.shade300,
-          highlightColor:
-              AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? greyColor
-                  : Colors.grey.shade100,
-          child: Container(
-            width: 160,
-            height: 24,
-            decoration: BoxDecoration(
-              color: secondaryColor,
-              borderRadius: BorderRadius.circular(defaultRadius),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(
+                defaultMargin, defaultMargin, defaultMargin, 12),
+            child: Shimmer.fromColors(
+              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
+                  ? bgColorDark3
+                  : Colors.grey.shade300,
+              highlightColor:
+                  AdaptiveTheme.of(context).brightness == Brightness.dark
+                      ? greyColor
+                      : Colors.grey.shade100,
+              child: Container(
+                width: 160,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(defaultRadius),
+                ),
+              ),
             ),
           ),
-        ),
+          Container(
+            margin: EdgeInsets.fromLTRB(
+                defaultMargin, defaultMargin, defaultMargin, 12),
+            child: Shimmer.fromColors(
+              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
+                  ? bgColorDark3
+                  : Colors.grey.shade300,
+              highlightColor:
+                  AdaptiveTheme.of(context).brightness == Brightness.dark
+                      ? greyColor
+                      : Colors.grey.shade100,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(defaultRadius),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       SizedBox(
         height: 154,
