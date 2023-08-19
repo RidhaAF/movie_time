@@ -25,7 +25,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   GetStorage box = GetStorage();
   bool _isDarkMode = false;
-  bool isLoading = false;
 
   _getUser() {
     context.read<UserCubit>().getUser();
