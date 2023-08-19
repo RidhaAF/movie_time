@@ -1,10 +1,12 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/cast_profile_photo.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
+import 'package:movie_time/components/horizontal_poster.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
+import 'package:movie_time/components/vertical_poster.dart';
 import 'package:movie_time/cubit/aggregate_credit/aggregate_credit_cubit.dart';
 import 'package:movie_time/cubit/recommendation_series/recommendation_series_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
@@ -17,7 +19,6 @@ import 'package:movie_time/models/series_season_detail_model.dart';
 import 'package:movie_time/models/watchlist_model.dart';
 import 'package:movie_time/services/watchlist_service.dart';
 import 'package:movie_time/utilities/constants.dart';
-import 'package:movie_time/utilities/env.dart';
 import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
@@ -31,10 +32,8 @@ class SeriesDetailPage extends StatefulWidget {
 
 class _SeriesDetailPageState extends State<SeriesDetailPage>
     with TickerProviderStateMixin {
-  late SeriesDetailModel series;
   bool isWatchlist = false;
   var top = 0.0;
-  bool dark = false;
   late TabController _tabController;
 
   @override
@@ -83,16 +82,15 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
 
   _watchlistService() async {
     final Map response;
+    WatchlistModel watchlist = WatchlistModel(
+      id: widget.id.toString(),
+      watchlistType: 'series',
+    );
+
     if (isWatchlist) {
-      response = await WatchlistService().addToWatchlist(WatchlistModel(
-        id: series.id.toString(),
-        watchlistType: 'series',
-      ));
+      response = await WatchlistService().addToWatchlist(watchlist);
     } else {
-      response = await WatchlistService().removeFromWatchlist(WatchlistModel(
-        id: series.id.toString(),
-        watchlistType: 'series',
-      ));
+      response = await WatchlistService().removeFromWatchlist(watchlist);
     }
 
     if (context.mounted) {
@@ -115,7 +113,6 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: RefreshIndicator(
         color: primaryColor,
@@ -127,7 +124,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
             } else if (state is SeriesDetailLoading) {
               return loadingIndicator();
             } else if (state is SeriesDetailLoaded) {
-              series = state.seriesDetail;
+              SeriesDetailModel series = state.seriesDetail;
 
               return CustomScrollView(
                 slivers: [
@@ -242,41 +239,18 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   Widget seriesBackground(SeriesDetailModel? series) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: getContainerColor(context),
-        image: DecorationImage(
-          colorFilter:
-              ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
-          image: series?.backdropPath != null
-              ? NetworkImage(
-                  '${Env.imageBaseURL}original/${series?.backdropPath}',
-                )
-              : const AssetImage('assets/images/img_null.png') as ImageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return HorizontalPoster(
+      backdropPath: series?.backdropPath,
+      isOriginal: true,
+      isBorderRadius: false,
+      isColorFilter: true,
     );
   }
 
   Widget seriesPoster(SeriesDetailModel? series) {
-    return Container(
-      height: 154,
-      width: 102,
-      decoration: BoxDecoration(
-        color: getContainerColor(context),
-        borderRadius: BorderRadius.circular(defaultRadius),
-        image: DecorationImage(
-          image: series?.posterPath != null
-              ? NetworkImage(
-                  '${Env.imageBaseURL}original/${series?.posterPath}',
-                )
-              : const AssetImage('assets/images/img_null.png') as ImageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return VerticalPoster(
+      posterPath: series?.posterPath,
+      isOriginal: true,
     );
   }
 
@@ -295,7 +269,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
               fontWeight: bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           Text(
             '${series?.firstAirDate?.toString().substring(0, 4)} • $totalSeason',
             style: GoogleFonts.plusJakartaSans(
@@ -303,7 +277,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
               fontWeight: semiBold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -330,6 +304,12 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   Widget seriesOverview(SeriesDetailModel? series) {
+    TextStyle readModeTS = GoogleFonts.plusJakartaSans(
+      color: primaryColor,
+      fontSize: subheadlineFS,
+      fontWeight: semiBold,
+    );
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Column(
@@ -342,7 +322,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
               fontWeight: bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           ReadMoreText(
             series?.overview ?? '',
             style: Theme.of(context).textTheme.titleSmall,
@@ -352,16 +332,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
             trimCollapsedText: '... read more',
             trimExpandedText: ' show less',
             delimiter: '',
-            lessStyle: GoogleFonts.plusJakartaSans(
-              color: primaryColor,
-              fontSize: bodyFS,
-              fontWeight: semiBold,
-            ),
-            moreStyle: GoogleFonts.plusJakartaSans(
-              color: primaryColor,
-              fontSize: bodyFS,
-              fontWeight: semiBold,
-            ),
+            lessStyle: readModeTS,
+            moreStyle: readModeTS,
           ),
         ],
       ),
@@ -387,7 +359,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
             isScrollable: true,
             indicatorColor: primaryColor,
             indicatorSize: TabBarIndicatorSize.label,
-            labelColor: dark ? whiteColor : blackColor,
+            labelColor: isDarkMode(context) ? whiteColor : blackColor,
             labelStyle: GoogleFonts.plusJakartaSans(
               fontSize: title3FS,
               fontWeight: bold,
@@ -430,7 +402,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                             return Expanded(
                               child: ListView.builder(
                                 padding: EdgeInsets.only(
-                                    left: defaultMargin, right: 8),
+                                  left: defaultMargin,
+                                  right: defaultMargin / 2,
+                                ),
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
                                 itemCount: episodes?.length ?? 0,
@@ -448,8 +422,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                     margin: EdgeInsets.only(
                                         right: defaultMargin / 2),
                                     decoration: BoxDecoration(
-                                      color:
-                                          dark ? darkGreyColor : white70Color,
+                                      color: isDarkMode(context)
+                                          ? darkGreyColor
+                                          : white70Color,
                                       borderRadius:
                                           BorderRadius.circular(defaultRadius),
                                     ),
@@ -472,7 +447,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                           Text(
                                             episode.name ?? '',
                                             style: GoogleFonts.plusJakartaSans(
-                                              color: dark
+                                              color: isDarkMode(context)
                                                   ? secondaryColor
                                                   : greyColor,
                                               fontSize: caption1FS,
@@ -499,7 +474,8 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                                 color: yellowColor,
                                                 size: 16,
                                               ),
-                                              const SizedBox(width: 4),
+                                              SizedBox(
+                                                  width: defaultMargin / 4),
                                               Text(
                                                 episode.voteAverage
                                                         ?.toStringAsFixed(1) ??
@@ -523,7 +499,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                                                 runtime,
                                                 style:
                                                     GoogleFonts.plusJakartaSans(
-                                                  color: dark
+                                                  color: isDarkMode(context)
                                                       ? secondaryColor
                                                       : greyColor,
                                                   fontSize: caption1FS,
@@ -549,7 +525,9 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                         child: Text(
                           totalEpisode,
                           style: GoogleFonts.plusJakartaSans(
-                            color: dark ? secondaryColor : greyColor,
+                            color: isDarkMode(context)
+                                ? secondaryColor
+                                : greyColor,
                             fontSize: caption1FS,
                           ),
                         ),
@@ -576,7 +554,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
             Icons.star_rounded,
             color: yellowColor,
           ),
-          const SizedBox(width: 4),
+          SizedBox(width: defaultMargin / 4),
           Text(
             series?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
@@ -611,49 +589,35 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(top: 8),
+          margin: EdgeInsets.only(top: defaultMargin / 2),
           height: 152,
           child: BlocBuilder<AggregateCreditCubit, AggregateCreditState>(
             builder: (context, state) {
               if (state is AggregateCreditInitial) {
                 return Container();
               } else if (state is AggregateCreditLoading) {
-                return loadingIndicator();
+                return castShimmer(context);
               } else if (state is AggregateCreditLoaded) {
                 List<Cast>? casts = state.aggregateCredit.cast;
 
                 return ListView.builder(
-                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
+                  padding: EdgeInsets.only(
+                    left: defaultMargin,
+                    right: defaultMargin / 2,
+                  ),
                   scrollDirection: Axis.horizontal,
                   itemCount: casts?.length,
                   itemBuilder: (context, index) {
                     Cast? cast = casts?[index];
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       width: 80,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: getContainerColor(context),
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: cast?.profilePath != null
-                                    ? NetworkImage(
-                                        '${Env.imageBaseURL}w500/${cast?.profilePath}',
-                                      )
-                                    : const AssetImage(
-                                            'assets/images/img_null.png')
-                                        as ImageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                          CastProfilePhoto(posterPath: cast?.profilePath),
+                          SizedBox(height: defaultMargin / 2),
                           Text(
                             cast?.name ?? '',
                             style: GoogleFonts.plusJakartaSans(
@@ -664,7 +628,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: defaultMargin / 4),
                           Text(
                             cast?.roles?[0].character ?? '',
                             style: GoogleFonts.plusJakartaSans(
@@ -694,7 +658,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
         if (state is RecommendationSeriesInitial) {
           return Container();
         } else if (state is RecommendationSeriesLoading) {
-          return loadingIndicator();
+          return moviePosterShimmer(context);
         } else if (state is RecommendationSeriesLoaded) {
           List<Result>? recommendationSeries =
               state.recommendationSeries.results;
@@ -726,31 +690,15 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                       Result? series = recommendationSeries?[index];
                       int? id = series?.id ?? 0;
 
-                      return InkWell(
-                        onTap: (() {
-                          context
-                              .push('/series/detail/$id')
-                              .then((value) => _getData());
-                        }),
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: getContainerColor(context),
-                            image: DecorationImage(
-                              image: series?.posterPath != null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${series?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
+                      return Container(
+                        margin: EdgeInsets.only(right: defaultMargin / 2),
+                        child: InkWell(
+                          onTap: (() {
+                            context
+                                .push('/series/detail/$id')
+                                .then((value) => _getData());
+                          }),
+                          child: VerticalPoster(posterPath: series?.posterPath),
                         ),
                       );
                     },

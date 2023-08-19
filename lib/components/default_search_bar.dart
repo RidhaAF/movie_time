@@ -1,6 +1,6 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_time/utilities/constants.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class DefaultSearchBar extends StatefulWidget {
   final TextEditingController? controller;
@@ -22,25 +22,22 @@ class DefaultSearchBar extends StatefulWidget {
 }
 
 class _DefaultSearchBarState extends State<DefaultSearchBar> {
-  bool dark = false;
-
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(defaultRadius),
       ),
       child: SearchBar(
-        backgroundColor:
-            MaterialStateProperty.all(dark ? bgColorDark3 : bgColorLight2),
+        backgroundColor: MaterialStateProperty.all(
+            isDarkMode(context) ? bgColorDark3 : bgColorLight2),
         controller: widget.controller,
         focusNode: widget.focusNode,
         hintText: widget.hintText ?? 'Search...',
         leading: Icon(
           Icons.search,
           color: widget.controller!.text.isNotEmpty
-              ? (dark ? whiteColor : blackColor)
+              ? (isDarkMode(context) ? whiteColor : blackColor)
               : mutedColor,
         ),
         trailing: widget.controller!.text.isNotEmpty
@@ -51,7 +48,7 @@ class _DefaultSearchBarState extends State<DefaultSearchBar> {
                   icon: Icon(
                     Icons.clear,
                     color: widget.controller!.text.isNotEmpty
-                        ? (dark ? whiteColor : blackColor)
+                        ? (isDarkMode(context) ? whiteColor : blackColor)
                         : mutedColor,
                   ),
                 ),
@@ -82,7 +79,7 @@ class _DefaultSearchBarState extends State<DefaultSearchBar> {
         ),
         textStyle: MaterialStateProperty.all(
           TextStyle(
-            color: (dark ? whiteColor : blackColor),
+            color: (isDarkMode(context) ? whiteColor : blackColor),
           ),
         ),
       ),

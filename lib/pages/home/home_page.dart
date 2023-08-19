@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
+import 'package:movie_time/components/slider_poster.dart';
+import 'package:movie_time/components/vertical_poster.dart';
 import 'package:movie_time/cubit/now_playing_movie/now_playing_movie_cubit.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/cubit/popular_movie/popular_movie_cubit.dart';
@@ -14,8 +14,6 @@ import 'package:movie_time/models/on_the_air_series_model.dart' as otasm;
 import 'package:movie_time/models/popular_movie_model.dart' as pmm;
 import 'package:movie_time/models/upcoming_movie_model.dart' as umm;
 import 'package:movie_time/utilities/constants.dart';
-import 'package:movie_time/utilities/env.dart';
-import 'package:movie_time/utilities/functions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,9 +23,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _current = 0;
-  final CarouselController _carouselController = CarouselController();
-
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
@@ -90,77 +85,7 @@ class _HomePageState extends State<HomePage> {
         } else if (state is PopularMovieLoaded) {
           List<pmm.Result?> popularMovies = state.popularMovie.results;
 
-          return Column(
-            children: [
-              CarouselSlider.builder(
-                itemCount: 5,
-                itemBuilder: (context, index, realIndex) {
-                  pmm.Result? movie = popularMovies[index];
-                  int? id = movie?.id ?? 0;
-
-                  return Container(
-                    margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-                    child: InkWell(
-                      customBorder: cardBorderRadius,
-                      onTap: (() {
-                        _goToMovieDetail(id);
-                      }),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            '${Env.imageBaseURL}original/${movie?.backdropPath}',
-                        imageBuilder: (context, imageProvider) => Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
-                        ),
-                        placeholder: (context, url) => Container(
-                          color: getContainerColor(context),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            Image.asset('assets/images/img_null.png'),
-                      ),
-                    ),
-                  );
-                },
-                options: CarouselOptions(
-                  height: 200,
-                  autoPlay: true,
-                  viewportFraction: 0.95,
-                  autoPlayInterval: const Duration(seconds: 5),
-                  onPageChanged: (index, carouselReason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-                carouselController: _carouselController,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return GestureDetector(
-                    onTap: () => _carouselController.animateToPage(index),
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _current == index ? primaryColor : mutedColor,
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ],
-          );
+          return SliderPoster(popularMovies: popularMovies);
         } else {
           return Container();
         }
@@ -219,31 +144,13 @@ class _HomePageState extends State<HomePage> {
                     int? id = movie?.id ?? 0;
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
                           _goToMovieDetail(id);
                         }),
-                        child: Container(
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: getContainerColor(context),
-                            image: DecorationImage(
-                              image: movie?.posterPath != null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
-                        ),
+                        child: VerticalPoster(posterPath: movie?.posterPath),
                       ),
                     );
                   },
@@ -309,31 +216,13 @@ class _HomePageState extends State<HomePage> {
                     int? id = series?.id ?? 0;
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
                           context.push('/series/detail/$id');
                         }),
-                        child: Container(
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: getContainerColor(context),
-                            image: DecorationImage(
-                              image: series?.posterPath != null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${series?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
-                        ),
+                        child: VerticalPoster(posterPath: series?.posterPath),
                       ),
                     );
                   },
@@ -399,31 +288,13 @@ class _HomePageState extends State<HomePage> {
                     int? id = movie?.id ?? 0;
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
                           _goToMovieDetail(id);
                         }),
-                        child: Container(
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: getContainerColor(context),
-                            image: DecorationImage(
-                              image: movie?.posterPath != null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
-                        ),
+                        child: VerticalPoster(posterPath: movie?.posterPath),
                       ),
                     );
                   },
@@ -489,31 +360,13 @@ class _HomePageState extends State<HomePage> {
                     int? id = movie?.id ?? 0;
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       child: InkWell(
                         customBorder: cardBorderRadius,
                         onTap: (() {
                           _goToMovieDetail(id);
                         }),
-                        child: Container(
-                          width: 102,
-                          decoration: BoxDecoration(
-                            color: getContainerColor(context),
-                            image: DecorationImage(
-                              image: movie?.posterPath != null
-                                  ? NetworkImage(
-                                      '${Env.imageBaseURL}w500/${movie?.posterPath}',
-                                    )
-                                  : const AssetImage(
-                                          'assets/images/img_null.png')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(defaultRadius),
-                            ),
-                          ),
-                        ),
+                        child: VerticalPoster(posterPath: movie?.posterPath),
                       ),
                     );
                   },

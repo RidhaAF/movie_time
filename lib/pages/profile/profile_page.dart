@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/services/user_service.dart';
 import 'package:movie_time/utilities/constants.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   GetStorage box = GetStorage();
   User? user;
-  bool isDarkMode = false;
+  bool _isDarkMode = false;
   bool dark = false;
   bool isLoading = false;
 
@@ -60,8 +61,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
-    isDarkMode = dark;
+    dark = isDarkMode(context);
+    _isDarkMode = dark;
     return Scaffold(
       appBar: appBar(
         title: 'Profile',
@@ -109,12 +110,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       trailing: Switch.adaptive(
-                        value: isDarkMode,
+                        value: _isDarkMode,
                         onChanged: (value) {
                           setState(() {
-                            isDarkMode = !isDarkMode;
+                            _isDarkMode = !_isDarkMode;
                             box.write('isDarkMode', isDarkMode);
-                            if (isDarkMode) {
+                            if (_isDarkMode) {
                               AdaptiveTheme.of(context).setDark();
                             } else {
                               AdaptiveTheme.of(context).setLight();

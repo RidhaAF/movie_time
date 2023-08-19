@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_time/components/vertical_poster.dart';
 import 'package:movie_time/cubit/on_the_air_series/on_the_air_series_cubit.dart';
 import 'package:movie_time/models/on_the_air_series_model.dart';
 import 'package:movie_time/utilities/constants.dart';
-import 'package:movie_time/utilities/env.dart';
-import 'package:movie_time/utilities/functions.dart';
 
 class OnTheAirSeriesPage extends StatefulWidget {
   const OnTheAirSeriesPage({super.key});
@@ -58,24 +57,7 @@ class _OnTheAirSeriesPageState extends State<OnTheAirSeriesPage> {
                     onTap: (() {
                       context.push('/series/detail/$id');
                     }),
-                    child: Container(
-                      width: 102,
-                      decoration: BoxDecoration(
-                        color: getContainerColor(context),
-                        image: DecorationImage(
-                          image: series?.posterPath != null
-                              ? NetworkImage(
-                                  '${Env.imageBaseURL}w500/${series?.posterPath}',
-                                )
-                              : const AssetImage('assets/images/img_null.png')
-                                  as ImageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(defaultRadius),
-                        ),
-                      ),
-                    ),
+                    child: VerticalPoster(posterPath: series?.posterPath),
                   );
                 },
               );

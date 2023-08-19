@@ -1,10 +1,10 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/services/user_service.dart';
 import 'package:movie_time/utilities/constants.dart';
+import 'package:movie_time/utilities/functions.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -14,7 +14,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  bool dark = false;
   bool isLoading = false;
 
   _signIn() async {
@@ -38,7 +37,6 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = AdaptiveTheme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -76,7 +74,9 @@ class _SignInPageState extends State<SignInPage> {
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () => _signIn(),
-                    style: dark ? darkGreyButtonStyle : primaryButtonStyle,
+                    style: isDarkMode(context)
+                        ? darkGreyButtonStyle
+                        : primaryButtonStyle,
                     child: isLoading
                         ? CircularProgressIndicator(
                             valueColor:

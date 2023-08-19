@@ -1,11 +1,8 @@
-import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:movie_time/utilities/constants.dart';
+import 'package:movie_time/utilities/functions.dart';
 import 'package:shimmer/shimmer.dart';
-
-GetStorage box = GetStorage();
 
 Widget moviePosterShimmer(context) {
   return Column(
@@ -18,18 +15,14 @@ Widget moviePosterShimmer(context) {
             margin: EdgeInsets.fromLTRB(
                 defaultMargin, defaultMargin, defaultMargin, 12),
             child: Shimmer.fromColors(
-              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? bgColorDark3
-                  : Colors.grey.shade300,
+              baseColor: getContainerColor(context),
               highlightColor:
-                  AdaptiveTheme.of(context).brightness == Brightness.dark
-                      ? greyColor
-                      : Colors.grey.shade100,
+                  isDarkMode(context) ? greyColor : Colors.grey.shade100,
               child: Container(
                 width: 160,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: secondaryColor,
+                  color: getContainerColor(context),
                   borderRadius: BorderRadius.circular(defaultRadius),
                 ),
               ),
@@ -39,18 +32,14 @@ Widget moviePosterShimmer(context) {
             margin: EdgeInsets.fromLTRB(
                 defaultMargin, defaultMargin, defaultMargin, 12),
             child: Shimmer.fromColors(
-              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? bgColorDark3
-                  : Colors.grey.shade300,
+              baseColor: getContainerColor(context),
               highlightColor:
-                  AdaptiveTheme.of(context).brightness == Brightness.dark
-                      ? greyColor
-                      : Colors.grey.shade100,
+                  isDarkMode(context) ? greyColor : Colors.grey.shade100,
               child: Container(
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: secondaryColor,
+                  color: getContainerColor(context),
                   borderRadius: BorderRadius.circular(defaultRadius),
                 ),
               ),
@@ -67,20 +56,15 @@ Widget moviePosterShimmer(context) {
           itemCount: 10,
           itemBuilder: (context, index) {
             return Container(
-              margin: const EdgeInsets.only(right: 8),
+              margin: EdgeInsets.only(right: defaultMargin / 2),
               child: Shimmer.fromColors(
-                baseColor:
-                    AdaptiveTheme.of(context).brightness == Brightness.dark
-                        ? bgColorDark3
-                        : Colors.grey.shade300,
+                baseColor: getContainerColor(context),
                 highlightColor:
-                    AdaptiveTheme.of(context).brightness == Brightness.dark
-                        ? greyColor
-                        : Colors.grey.shade100,
+                    isDarkMode(context) ? greyColor : Colors.grey.shade100,
                 child: Container(
                   width: 102,
                   decoration: BoxDecoration(
-                    color: secondaryColor,
+                    color: getContainerColor(context),
                     borderRadius: BorderRadius.circular(defaultRadius),
                   ),
                 ),
@@ -105,16 +89,12 @@ Widget gridMoviePosterShimmer(context) {
     itemCount: 15,
     itemBuilder: (context, index) {
       return Shimmer.fromColors(
-        baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-            ? bgColorDark3
-            : Colors.grey.shade300,
-        highlightColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-            ? greyColor
-            : Colors.grey.shade100,
+        baseColor: getContainerColor(context),
+        highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
         child: Container(
           width: 102,
           decoration: BoxDecoration(
-            color: secondaryColor,
+            color: getContainerColor(context),
             borderRadius: BorderRadius.circular(defaultRadius),
           ),
         ),
@@ -132,17 +112,14 @@ Widget sliderMoviePosterShimmer(context) {
           return Container(
             margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
             child: Shimmer.fromColors(
-              baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? bgColorDark3
-                  : Colors.grey.shade300,
+              baseColor: getContainerColor(context),
               highlightColor:
-                  AdaptiveTheme.of(context).brightness == Brightness.dark
-                      ? greyColor
-                      : Colors.grey.shade100,
+                  isDarkMode(context) ? greyColor : Colors.grey.shade100,
               child: Container(
+                width: double.infinity,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: secondaryColor,
+                  color: getContainerColor(context),
                   borderRadius: BorderRadius.circular(defaultRadius),
                 ),
               ),
@@ -157,17 +134,13 @@ Widget sliderMoviePosterShimmer(context) {
         ),
       ),
       Shimmer.fromColors(
-        baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-            ? bgColorDark3
-            : Colors.grey.shade300,
-        highlightColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-            ? greyColor
-            : Colors.grey.shade100,
+        baseColor: getContainerColor(context),
+        highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
         child: Container(
           width: 72,
           height: 8,
           decoration: BoxDecoration(
-            color: secondaryColor,
+            color: getContainerColor(context),
             borderRadius: BorderRadius.circular(defaultRadius),
           ),
         ),
@@ -185,26 +158,138 @@ Widget horizontalEpisodesList() {
       itemCount: 10,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: AdaptiveTheme.of(context).brightness == Brightness.dark
-              ? bgColorDark3
-              : Colors.grey.shade300,
+          baseColor: getContainerColor(context),
           highlightColor:
-              AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? greyColor
-                  : Colors.grey.shade100,
+              isDarkMode(context) ? greyColor : Colors.grey.shade100,
           child: Container(
             width: 280,
             height: 128,
             margin: EdgeInsets.only(right: defaultMargin / 2),
             decoration: BoxDecoration(
-              color: AdaptiveTheme.of(context).brightness == Brightness.dark
-                  ? darkGreyColor
-                  : white70Color,
+              color: isDarkMode(context) ? darkGreyColor : white70Color,
               borderRadius: BorderRadius.circular(defaultRadius),
             ),
           ),
         );
       },
+    ),
+  );
+}
+
+Widget verticalPosterShimmer(context) {
+  return Shimmer.fromColors(
+    baseColor: getContainerColor(context),
+    highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
+    child: Container(
+      width: 102,
+      height: 154,
+      decoration: BoxDecoration(
+        color: getContainerColor(context),
+        borderRadius: BorderRadius.circular(defaultRadius),
+      ),
+    ),
+  );
+}
+
+Widget horizontalPosterShimmer(context, {bool isBorderRadius = true}) {
+  return Shimmer.fromColors(
+    baseColor: getContainerColor(context),
+    highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
+    child: Container(
+      width: double.infinity,
+      height: 200,
+      decoration: BoxDecoration(
+        color: getContainerColor(context),
+        borderRadius:
+            isBorderRadius ? BorderRadius.circular(defaultRadius) : null,
+      ),
+    ),
+  );
+}
+
+Widget creditShimmer(context) {
+  return Shimmer.fromColors(
+    baseColor: getContainerColor(context),
+    highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
+    child: Row(
+      children: [
+        Container(
+          width: 56,
+          height: 16,
+          decoration: BoxDecoration(
+            color: getContainerColor(context),
+            borderRadius: BorderRadius.circular(defaultRadius),
+          ),
+        ),
+        SizedBox(width: defaultMargin / 2),
+        Expanded(
+          child: lineContainer(context),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget castShimmer(context) {
+  return ListView.builder(
+    padding: EdgeInsets.only(left: defaultMargin, right: 8),
+    scrollDirection: Axis.horizontal,
+    itemCount: 10,
+    itemBuilder: (context, index) {
+      return Container(
+        margin: EdgeInsets.only(right: defaultMargin / 2),
+        width: 80,
+        child: Shimmer.fromColors(
+          baseColor: getContainerColor(context),
+          highlightColor:
+              isDarkMode(context) ? greyColor : Colors.grey.shade100,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: defaultMargin / 2),
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: getContainerColor(context),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              lineContainer(context),
+              SizedBox(height: defaultMargin / 4),
+              lineContainer(context),
+              SizedBox(height: defaultMargin / 4),
+              lineContainer(context),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget castProfilePhotoShimmer(context) {
+  return Shimmer.fromColors(
+    baseColor: getContainerColor(context),
+    highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
+    child: Container(
+      height: 80,
+      width: 80,
+      decoration: BoxDecoration(
+        color: getContainerColor(context),
+        shape: BoxShape.circle,
+      ),
+    ),
+  );
+}
+
+Widget lineContainer(context) {
+  return Container(
+    width: double.infinity,
+    height: 16,
+    decoration: BoxDecoration(
+      color: getContainerColor(context),
+      borderRadius: BorderRadius.circular(defaultRadius),
     ),
   );
 }

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_time/components/cast_profile_photo.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
+import 'package:movie_time/components/horizontal_poster.dart';
 import 'package:movie_time/components/shimmer_loading.dart';
+import 'package:movie_time/components/vertical_poster.dart';
 import 'package:movie_time/cubit/credit/credit_cubit.dart';
 import 'package:movie_time/cubit/movie_detail/movie_detail_cubit.dart';
 import 'package:movie_time/cubit/recommendation_movie/recommendation_movie_cubit.dart';
@@ -14,7 +17,6 @@ import 'package:movie_time/models/recommendation_movie_model.dart';
 import 'package:movie_time/models/watchlist_model.dart';
 import 'package:movie_time/services/watchlist_service.dart';
 import 'package:movie_time/utilities/constants.dart';
-import 'package:movie_time/utilities/env.dart';
 import 'package:movie_time/utilities/functions.dart';
 import 'package:readmore/readmore.dart';
 
@@ -27,7 +29,6 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  late MovieDetailModel movie;
   String title = '';
   bool isWatchlist = false;
   var top = 0.0;
@@ -69,16 +70,15 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   _watchlistService() async {
     final Map response;
+    WatchlistModel watchlist = WatchlistModel(
+      id: widget.id.toString(),
+      watchlistType: 'movie',
+    );
+
     if (isWatchlist) {
-      response = await WatchlistService().addToWatchlist(WatchlistModel(
-        id: movie.id.toString(),
-        watchlistType: 'movie',
-      ));
+      response = await WatchlistService().addToWatchlist(watchlist);
     } else {
-      response = await WatchlistService().removeFromWatchlist(WatchlistModel(
-        id: movie.id.toString(),
-        watchlistType: 'movie',
-      ));
+      response = await WatchlistService().removeFromWatchlist(watchlist);
     }
 
     if (context.mounted) {
@@ -112,7 +112,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             } else if (state is MovieDetailLoading) {
               return loadingIndicator();
             } else if (state is MovieDetailLoaded) {
-              movie = state.movieDetail;
+              MovieDetailModel movie = state.movieDetail;
               title = movie.originalLanguage == 'id'
                   ? movie.originalTitle ?? ''
                   : movie.title ?? '';
@@ -230,41 +230,18 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget movieBackground(MovieDetailModel? movie) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: getContainerColor(context),
-        image: DecorationImage(
-          colorFilter:
-              ColorFilter.mode(blackColor.withOpacity(0.3), BlendMode.darken),
-          image: movie?.backdropPath != null
-              ? NetworkImage(
-                  '${Env.imageBaseURL}original/${movie?.backdropPath}',
-                )
-              : const AssetImage('assets/images/img_null.png') as ImageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return HorizontalPoster(
+      backdropPath: movie?.backdropPath,
+      isOriginal: true,
+      isBorderRadius: false,
+      isColorFilter: true,
     );
   }
 
   Widget moviePoster(MovieDetailModel? movie) {
-    return Container(
-      height: 154,
-      width: 102,
-      decoration: BoxDecoration(
-        color: getContainerColor(context),
-        borderRadius: BorderRadius.circular(defaultRadius),
-        image: DecorationImage(
-          image: movie?.posterPath != null
-              ? NetworkImage(
-                  '${Env.imageBaseURL}original/${movie?.posterPath}',
-                )
-              : const AssetImage('assets/images/img_null.png') as ImageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return VerticalPoster(
+      posterPath: movie?.posterPath,
+      isOriginal: true,
     );
   }
 
@@ -298,7 +275,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               fontWeight: bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           Text(
             '${movie.releaseDate?.toString().substring(0, 4)} • $certificationWithDot $runtime',
             style: GoogleFonts.plusJakartaSans(
@@ -306,7 +283,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               fontWeight: semiBold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -323,18 +300,17 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     fontSize: footnoteFS,
                     fontWeight: semiBold,
                   ),
-                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           BlocBuilder<CreditCubit, CreditState>(
             builder: (context, state) {
               if (state is CreditInitial) {
                 return Container();
               } else if (state is CreditLoading) {
-                return loadingIndicator();
+                return creditShimmer(context);
               } else if (state is CreditLoaded) {
                 List<Cast>? crews = state.credit.crew;
                 String director = crews
@@ -373,6 +349,12 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget movieOverview(MovieDetailModel? movie) {
+    TextStyle readModeTS = GoogleFonts.plusJakartaSans(
+      color: primaryColor,
+      fontSize: subheadlineFS,
+      fontWeight: semiBold,
+    );
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: defaultMargin),
       child: Column(
@@ -385,7 +367,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               fontWeight: bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: defaultMargin / 2),
           ReadMoreText(
             movie?.overview ?? '',
             style: Theme.of(context).textTheme.titleSmall,
@@ -395,16 +377,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             trimCollapsedText: '... read more',
             trimExpandedText: ' show less',
             delimiter: '',
-            lessStyle: GoogleFonts.plusJakartaSans(
-              color: primaryColor,
-              fontSize: bodyFS,
-              fontWeight: semiBold,
-            ),
-            moreStyle: GoogleFonts.plusJakartaSans(
-              color: primaryColor,
-              fontSize: bodyFS,
-              fontWeight: semiBold,
-            ),
+            lessStyle: readModeTS,
+            moreStyle: readModeTS,
           ),
         ],
       ),
@@ -423,7 +397,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             Icons.star_rounded,
             color: yellowColor,
           ),
-          const SizedBox(width: 4),
+          SizedBox(width: defaultMargin / 4),
           Text(
             movie?.voteAverage?.toStringAsFixed(1) ?? '0',
             style: GoogleFonts.plusJakartaSans(
@@ -458,49 +432,35 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(top: 8),
+          margin: EdgeInsets.only(top: defaultMargin / 2),
           height: 152,
           child: BlocBuilder<CreditCubit, CreditState>(
             builder: (context, state) {
               if (state is CreditInitial) {
                 return Container();
               } else if (state is CreditLoading) {
-                return loadingIndicator();
+                return castShimmer(context);
               } else if (state is CreditLoaded) {
                 List<Cast>? casts = state.credit.cast;
 
                 return ListView.builder(
-                  padding: EdgeInsets.only(left: defaultMargin, right: 8),
+                  padding: EdgeInsets.only(
+                    left: defaultMargin,
+                    right: defaultMargin / 2,
+                  ),
                   scrollDirection: Axis.horizontal,
                   itemCount: casts?.length ?? 0,
                   itemBuilder: (context, index) {
                     Cast? cast = casts?[index];
 
                     return Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: EdgeInsets.only(right: defaultMargin / 2),
                       width: 80,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: getContainerColor(context),
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: cast?.profilePath != null
-                                    ? NetworkImage(
-                                        '${Env.imageBaseURL}w500/${cast?.profilePath}',
-                                      )
-                                    : const AssetImage(
-                                            'assets/images/img_null.png')
-                                        as ImageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                          CastProfilePhoto(posterPath: cast?.profilePath),
+                          SizedBox(height: defaultMargin / 2),
                           Expanded(
                             child: Text(
                               cast?.name ?? '',
@@ -513,7 +473,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: defaultMargin / 4),
                           Expanded(
                             child: Text(
                               cast?.character ?? '',
@@ -577,7 +537,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       int? id = recommendedMovie?.id ?? 0;
 
                       return Container(
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: EdgeInsets.only(right: defaultMargin / 2),
                         child: InkWell(
                           customBorder: cardBorderRadius,
                           onTap: (() {
@@ -585,24 +545,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                 .push('/movie/detail/$id')
                                 .then((value) => _getData());
                           }),
-                          child: Container(
-                            width: 102,
-                            decoration: BoxDecoration(
-                              color: getContainerColor(context),
-                              image: DecorationImage(
-                                image: recommendedMovie?.posterPath != null
-                                    ? NetworkImage(
-                                        '${Env.imageBaseURL}w500/${recommendedMovie?.posterPath}',
-                                      )
-                                    : const AssetImage(
-                                            'assets/images/img_null.png')
-                                        as ImageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(defaultRadius),
-                              ),
-                            ),
+                          child: VerticalPoster(
+                            posterPath: recommendedMovie?.posterPath,
                           ),
                         ),
                       );
