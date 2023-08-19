@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
 import 'package:movie_time/services/user_service.dart';
 import 'package:movie_time/utilities/constants.dart';
-import 'package:movie_time/utilities/functions.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -74,9 +73,7 @@ class _SignInPageState extends State<SignInPage> {
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () => _signIn(),
-                    style: isDarkMode(context)
-                        ? darkGreyButtonStyle
-                        : primaryButtonStyle,
+                    style: darkGreyButtonStyle,
                     child: isLoading
                         ? CircularProgressIndicator(
                             valueColor:
