@@ -1,11 +1,16 @@
 import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
+import 'package:movie_time/components/poster_card.dart';
+import 'package:movie_time/components/shimmer_loading.dart';
+import 'package:movie_time/cubit/user/user_cubit.dart';
 import 'package:movie_time/services/user_service.dart';
 import 'package:movie_time/utilities/constants.dart';
 import 'package:movie_time/utilities/functions.dart';
@@ -19,21 +24,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   GetStorage box = GetStorage();
-  User? user;
   bool _isDarkMode = false;
-  bool dark = false;
   bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _getUser();
-  }
-
-  _getUser() async {
-    setState(() => isLoading = true);
-    user = await UserService().getUser();
-    setState(() => isLoading = false);
+  _getUser() {
+    context.read<UserCubit>().getUser();
   }
 
   _signOut() async {
@@ -61,8 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    dark = isDarkMode(context);
-    _isDarkMode = dark;
+    _isDarkMode = isDarkMode(context);
     return Scaffold(
       appBar: appBar(
         title: 'Profile',
@@ -76,26 +70,51 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.all(defaultMargin),
               child: Column(
                 children: [
-                  isLoading
-                      ? Container()
-                      : _profileList(
-                          user?.displayName ?? '',
-                          subtitle: user?.email ?? '',
-                          leading: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(defaultRadius * 5),
-                            child: Image.network(
-                              user?.photoURL ?? '',
+                  BlocBuilder<UserCubit, UserState>(
+                    builder: (context, state) {
+                      if (state is UserInitial) {
+                        return Container();
+                      } else if (state is UserLoading) {
+                        return userProfileShimmer(context);
+                      } else if (state is UserLoaded) {
+                        User? user = state.user;
+
+                        return _profileList(
+                          user.displayName ?? 'John Doe',
+                          subtitle: user.email ?? 'johndoe@mail.com',
+                          leading: CachedNetworkImage(
+                            imageUrl: user.photoURL ?? '',
+                            imageBuilder: (context, imageProvider) =>
+                                PosterCard(
                               width: 48,
                               height: 48,
-                              fit: BoxFit.cover,
+                              image: imageProvider,
+                              isBorderRadius: false,
+                              isShapeCircle: true,
                             ),
+                            placeholder: (context, url) => SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: castProfilePhotoShimmer(context),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const PosterCard(
+                              width: 48,
+                              height: 48,
+                              isBorderRadius: false,
+                              isShapeCircle: true,
+                            ),
+                            useOldImageOnUrlChange: true,
                           ),
-                        ),
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
                   SizedBox(height: defaultMargin),
                   Container(
                     decoration: BoxDecoration(
-                      color: dark ? bgColorDark3 : bgColorLight2,
+                      color: isDarkMode(context) ? bgColorDark3 : bgColorLight2,
                       borderRadius: BorderRadius.circular(defaultRadius),
                     ),
                     child: ListTile(
@@ -159,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: dark ? bgColorDark3 : bgColorLight2,
+        color: isDarkMode(context) ? bgColorDark3 : bgColorLight2,
         borderRadius: BorderRadius.circular(defaultRadius),
       ),
       child: ListTile(

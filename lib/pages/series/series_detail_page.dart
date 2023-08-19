@@ -616,7 +616,7 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CastProfilePhoto(posterPath: cast?.profilePath),
+                          CastProfilePhoto(profilePath: cast?.profilePath),
                           SizedBox(height: defaultMargin / 2),
                           Text(
                             cast?.name ?? '',

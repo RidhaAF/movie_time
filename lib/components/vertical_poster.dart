@@ -29,6 +29,7 @@ class VerticalPoster extends StatelessWidget {
         width: 102,
         height: 154,
       ),
+      useOldImageOnUrlChange: true,
     );
   }
 }

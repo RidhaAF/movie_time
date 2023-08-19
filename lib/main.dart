@@ -17,6 +17,7 @@ import 'package:movie_time/cubit/search/search_cubit.dart';
 import 'package:movie_time/cubit/series_detail/series_detail_cubit.dart';
 import 'package:movie_time/cubit/series_season_detail/series_season_detail_cubit.dart';
 import 'package:movie_time/cubit/upcoming_movie/upcoming_movie_cubit.dart';
+import 'package:movie_time/cubit/user/user_cubit.dart';
 import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/firebase_options.dart';
 import 'package:movie_time/pages/auth/sign_in_page.dart';
@@ -164,6 +165,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SearchCubit(),
+        ),
+        BlocProvider(
+          create: (context) => UserCubit(),
         ),
       ],
       child: AdaptiveTheme(

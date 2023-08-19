@@ -40,6 +40,7 @@ class HorizontalPoster extends StatelessWidget {
         isBorderRadius: isBorderRadius,
         isColorFilter: isColorFilter,
       ),
+      useOldImageOnUrlChange: true,
     );
   }
 }

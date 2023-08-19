@@ -5,13 +5,13 @@ import 'package:movie_time/components/shimmer_loading.dart';
 import 'package:movie_time/utilities/env.dart';
 
 class CastProfilePhoto extends StatelessWidget {
-  final String? posterPath;
-  const CastProfilePhoto({super.key, required this.posterPath});
+  final String? profilePath;
+  const CastProfilePhoto({super.key, required this.profilePath});
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: '${Env.imageBaseURL}w500/$posterPath',
+      imageUrl: '${Env.imageBaseURL}w500/$profilePath',
       imageBuilder: (context, imageProvider) => PosterCard(
         width: 80,
         height: 80,
@@ -26,6 +26,7 @@ class CastProfilePhoto extends StatelessWidget {
         isBorderRadius: false,
         isShapeCircle: true,
       ),
+      useOldImageOnUrlChange: true,
     );
   }
 }

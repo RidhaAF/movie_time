@@ -283,10 +283,32 @@ Widget castProfilePhotoShimmer(context) {
   );
 }
 
-Widget lineContainer(context) {
+Widget userProfileShimmer(context) {
   return Container(
-    width: double.infinity,
-    height: 16,
+    decoration: BoxDecoration(
+      color: isDarkMode(context) ? bgColorDark3 : bgColorLight2,
+      borderRadius: BorderRadius.circular(defaultRadius),
+    ),
+    child: Shimmer.fromColors(
+      baseColor: isDarkMode(context) ? darkColor : Colors.grey.shade300,
+      highlightColor: isDarkMode(context) ? greyColor : Colors.grey.shade100,
+      child: ListTile(
+        leading: SizedBox(
+          width: 48,
+          height: 48,
+          child: castProfilePhotoShimmer(context),
+        ),
+        title: lineContainer(context),
+        subtitle: lineContainer(context),
+      ),
+    ),
+  );
+}
+
+Widget lineContainer(context, {double? width, double? height}) {
+  return Container(
+    width: width ?? double.infinity,
+    height: height ?? 16,
     decoration: BoxDecoration(
       color: getContainerColor(context),
       borderRadius: BorderRadius.circular(defaultRadius),
