@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "760631040465-bt2gnvdteefnqknebka62ljg4l1i4h23.apps.googleusercontent.com",
+          "client_id": "760631040465-l9j2ldkb0hk17mja9i838vkt9hv2i7o1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "id.co.ridhaaf.movie_time",
-            "certificate_hash": "6dfd858bd0e5fe4fad71083486f3fee5e499b88a"
+            "certificate_hash": "657af0e70cafeb6ca6d99c86141a6fe1cd160e1e"
           }
         },
         {
