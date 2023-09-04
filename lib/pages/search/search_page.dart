@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_time/components/default_404.dart';
@@ -19,6 +20,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
+  Timer _timer = Timer(const Duration(milliseconds: 500), () {});
 
   @override
   void initState() {
@@ -26,9 +28,20 @@ class _SearchPageState extends State<SearchPage> {
     _clearSearch();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _searchCtrl.dispose();
+    _searchFocus.dispose();
+    _timer.cancel();
+  }
+
   void _search(String query) {
     if (_searchCtrl.text.isNotEmpty) {
-      Future.delayed(const Duration(milliseconds: 500), () {
+      if (_timer.isActive) {
+        _timer.cancel();
+      }
+      _timer = Timer(const Duration(milliseconds: 500), () {
         context.read<SearchCubit>().searchMulti(query);
       });
     } else {
