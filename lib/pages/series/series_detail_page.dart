@@ -69,29 +69,31 @@ class _SeriesDetailPageState extends State<SeriesDetailPage>
   }
 
   _getWatchlist() {
-    List<WatchlistModel> watchlists =
-        context.read<WatchlistCubit>().getWatchlistsData();
-    for (WatchlistModel item in watchlists) {
-      if (item.id == widget.id.toString()) {
-        setState(() {
-          isWatchlist = true;
-        });
-      }
-    }
+    final watchlists = context.read<WatchlistCubit>().getWatchlistsData();
+    setState(() {
+      isWatchlist = watchlists.any(
+        (item) =>
+            item.contents
+                ?.any((content) => content.contentId == widget.id.toString()) ??
+            false,
+      );
+    });
   }
 
   _watchlistService() async {
-    final Map response;
+    final WatchlistService watchlistService = WatchlistService();
     WatchlistModel watchlist = WatchlistModel(
-      id: widget.id.toString(),
-      watchlistType: 'series',
+      contents: [
+        Content(
+          contentId: widget.id.toString(),
+          contentType: 'series',
+        ),
+      ],
     );
 
-    if (isWatchlist) {
-      response = await WatchlistService().addToWatchlist(watchlist);
-    } else {
-      response = await WatchlistService().removeFromWatchlist(watchlist);
-    }
+    final response = isWatchlist
+        ? await watchlistService.addToWatchlist(watchlist)
+        : await watchlistService.removeFromWatchlist(watchlist);
 
     if (context.mounted) {
       if (response['success']) {
