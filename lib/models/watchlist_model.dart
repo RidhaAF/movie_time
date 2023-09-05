@@ -3,14 +3,12 @@ import 'dart:convert';
 class WatchlistModel {
   String? id;
   String? userId;
-  String? watchlistType;
-  String? posterPath;
+  List<Content>? contents;
 
   WatchlistModel({
     this.id,
     this.userId,
-    this.watchlistType,
-    this.posterPath,
+    this.contents,
   });
 
   factory WatchlistModel.fromRawJson(String str) =>
@@ -21,13 +19,40 @@ class WatchlistModel {
   factory WatchlistModel.fromJson(Map<String, dynamic> json) => WatchlistModel(
         id: json["id"],
         userId: json["user_id"],
-        watchlistType: json["watchlist_type"],
-        posterPath: json["poster_path"],
+        contents: List<Content>.from(
+            json["contents"].map((x) => Content.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
-        "watchlist_type": watchlistType,
+        "contents": List<dynamic>.from(contents!.map((x) => x.toJson())),
+      };
+}
+
+class Content {
+  String? contentId;
+  String? contentType;
+  String? posterPath;
+
+  Content({
+    this.contentId,
+    this.contentType,
+    this.posterPath,
+  });
+
+  factory Content.fromRawJson(String str) => Content.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory Content.fromJson(Map<String, dynamic> json) => Content(
+        contentId: json["content_id"],
+        contentType: json["content_type"],
+        posterPath: json["poster_path"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "content_id": contentId,
+        "content_type": contentType,
       };
 }

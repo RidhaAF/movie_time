@@ -20,15 +20,23 @@ class WatchlistService {
           .get();
 
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
-        final ImageModel? response;
-        if (data['watchlist_type'] == 'movie') {
-          response = await MovieService().getImages(int.parse(data['id']));
-        } else {
-          response = await SeriesService().getImages(int.parse(data['id']));
+
+        final List<dynamic> contents = data['contents'] ?? [];
+        for (var item in contents) {
+          final ImageModel? response;
+          if (item['content_type'] == 'movie') {
+            response = await MovieService()
+                .getImages(int.parse(item['content_id'] ?? '0'));
+          } else {
+            response = await SeriesService()
+                .getImages(int.parse(item['content_id'] ?? '0'));
+          }
+          item['poster_path'] = response?.posters?[0].filePath;
         }
-        data['poster_path'] = response?.posters?[0].filePath;
+        data['contents'] = contents;
+
         WatchlistModel watchlist = WatchlistModel.fromJson(data);
         watchlists.add(watchlist);
       }
@@ -43,12 +51,30 @@ class WatchlistService {
   }
 
   Future<Map<String, dynamic>> addToWatchlist(WatchlistModel watchlist) async {
+    final Map<String, dynamic> watchlistData = {
+      'content_id': watchlist.contents?.first.contentId,
+      'content_type': watchlist.contents?.first.contentType,
+    };
+
     try {
       watchlist.userId = user?.uid;
-      await firestore.collection('watchlists').doc(watchlist.id).set({
-        'user_id': watchlist.userId,
-        'watchlist_type': watchlist.watchlistType,
-      });
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('watchlists')
+          .where('user_id', isEqualTo: watchlist.userId)
+          .get();
+
+      final DocumentReference watchlistRef = querySnapshot.docs.isNotEmpty
+          ? querySnapshot.docs.first.reference
+          : firestore.collection('watchlists').doc();
+
+      await watchlistRef.set(
+        {
+          'user_id': watchlist.userId,
+          'contents': FieldValue.arrayUnion([watchlistData]),
+        },
+        SetOptions(merge: true), // Use merge to avoid overwriting existing data
+      );
 
       return {
         'success': true,
@@ -70,8 +96,36 @@ class WatchlistService {
 
   Future<Map<String, dynamic>> removeFromWatchlist(
       WatchlistModel watchlist) async {
+    final Map<String, dynamic> watchlistData = {
+      'content_id': watchlist.contents?.first.contentId,
+      'content_type': watchlist.contents?.first.contentType,
+    };
+
     try {
-      await firestore.collection('watchlists').doc(watchlist.id).delete();
+      watchlist.userId = user?.uid;
+
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('watchlists')
+          .where('user_id', isEqualTo: watchlist.userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentReference watchlistRef =
+            querySnapshot.docs.first.reference;
+
+        await watchlistRef.update(
+          {
+            'contents': FieldValue.arrayRemove([watchlistData]),
+          },
+        );
+
+        final updatedDocument = await watchlistRef.get();
+
+        final List<dynamic> contents = updatedDocument['contents'];
+        if (contents.isEmpty) {
+          await watchlistRef.delete();
+        }
+      }
 
       return {
         'success': true,
