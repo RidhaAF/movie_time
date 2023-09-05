@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_time/components/default_snack_bar.dart';
+import 'package:movie_time/cubit/user/user_cubit.dart';
+import 'package:movie_time/cubit/watchlist/watchlist_cubit.dart';
 import 'package:movie_time/services/user_service.dart';
 import 'package:movie_time/utilities/constants.dart';
 
@@ -22,6 +25,8 @@ class _SignInPageState extends State<SignInPage> {
     if (context.mounted) {
       if (response != null) {
         context.pushReplacement('/');
+        context.read<UserCubit>().getUser();
+        context.read<WatchlistCubit>().getWatchlists();
         DefaultSnackBar.show(
           context,
           'Signed in successfully!',

@@ -49,6 +49,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
               return gridMoviePosterShimmer(context);
             } else if (state is WatchlistLoaded) {
               List<WatchlistModel> watchlists = state.watchlists;
+              List<Content>? contents = watchlists[0].contents;
 
               if (watchlists.isEmpty) {
                 return const Default404();
@@ -61,32 +62,30 @@ class _WatchlistPageState extends State<WatchlistPage> {
                   mainAxisSpacing: 8,
                 ),
                 padding: EdgeInsets.all(defaultMargin),
-                itemCount: watchlists.length,
+                itemCount: contents?.length ?? 0,
                 itemBuilder: (context, i) {
-                  WatchlistModel watchlist = watchlists[i];
+                  Content content = contents![i];
 
                   return InkWell(
                     customBorder: cardBorderRadius,
-                    onTap: (() {
-                      int id = int.parse(watchlist.id ?? '0');
+                    onTap: () {
+                      int id = int.parse(content.contentId ?? '0');
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            final isMovie = watchlist.watchlistType == 'movie';
+                            final isMovie = content.contentType == 'movie';
                             return isMovie
                                 ? MovieDetailPage(id: id)
                                 : SeriesDetailPage(id: id);
                           },
                         ),
                       ).then((value) {
-                        setState(() {
-                          context.read<WatchlistCubit>().getWatchlistsData();
-                        });
+                        context.read<WatchlistCubit>().getWatchlistsData();
                       });
-                    }),
-                    child: VerticalPoster(posterPath: watchlist.posterPath),
+                    },
+                    child: VerticalPoster(posterPath: content.posterPath),
                   );
                 },
               );
