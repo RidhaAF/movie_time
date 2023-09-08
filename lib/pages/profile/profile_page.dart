@@ -25,6 +25,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   GetStorage box = GetStorage();
   bool _isDarkMode = false;
+  String _appVersion = '1.0.0';
 
   _getUser() {
     context.read<UserCubit>().getUser();
@@ -51,6 +52,17 @@ class _ProfilePageState extends State<ProfilePage> {
       _getUser();
       setState(() {});
     }
+  }
+
+  _getAppVersion() async {
+    _appVersion = await getAppVersion();
+    setState(() => _appVersion);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getAppVersion();
   }
 
   @override
@@ -126,6 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: calloutFS,
                         ),
+                        textScaleFactor: 1.0,
                       ),
                       trailing: Switch.adaptive(
                         value: _isDarkMode,
@@ -157,7 +170,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: bodyFS,
                           fontWeight: bold,
                         ),
+                        textScaleFactor: 1.0,
                       ),
+                    ),
+                  ),
+                  SizedBox(height: defaultMargin),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      'v$_appVersion',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: mutedColor,
+                        fontSize: caption1FS,
+                      ),
+                      textAlign: TextAlign.end,
+                      textScaleFactor: 1.0,
                     ),
                   ),
                 ],
@@ -188,6 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
             fontSize: headlineFS,
             fontWeight: semiBold,
           ),
+          textScaleFactor: 1.0,
         ),
         subtitle: subtitle != null
             ? Text(
@@ -195,6 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: footnoteFS,
                 ),
+                textScaleFactor: 1.0,
               )
             : Container(),
         trailing: trailing,
