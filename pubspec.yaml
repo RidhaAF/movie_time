@@ -48,6 +48,7 @@ dependencies:
   google_fonts: ^5.1.0
   google_sign_in: ^6.1.4
   intl: ^0.18.1
+  package_info_plus: ^4.1.0
   readmore: ^2.2.0
   shimmer: ^3.0.0
 

@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_time/utilities/constants.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 bool isDarkMode(BuildContext context) {
   return AdaptiveTheme.of(context).brightness == Brightness.dark;
@@ -56,4 +57,9 @@ dateFormatter(DateTime dateTime) {
 
 dateTimeFormatter(DateTime dateTime) {
   return DateFormat('MMM dd yyyy HH:mm:ss').format(dateTime);
+}
+
+Future<String> getAppVersion() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  return packageInfo.version;
 }
